@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Docker学习总结之Dockerfile编写 | 小周私记</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用 Dockerfile 可以允许用户创建自定义的镜像">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker学习总结之Dockerfile编写">
+<meta property="og:url" content="https://qi-zhou.github.io/2016/11/10/Docker学习总结之Dockerfile编写/index.html">
+<meta property="og:site_name" content="小周私记">
+<meta property="og:description" content="使用 Dockerfile 可以允许用户创建自定义的镜像">
+<meta property="og:updated_time" content="2016-12-18T05:59:01.384Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker学习总结之Dockerfile编写">
+<meta name="twitter:description" content="使用 Dockerfile 可以允许用户创建自定义的镜像">
+  
+    <link rel="alternate" href="/atom.xml" title="小周私记" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?edfbc429dfd69afa3c409df70d65980f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小周私记</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Stay hungry，Stay foolish.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://qi-zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Docker学习总结之Dockerfile编写" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/11/10/Docker学习总结之Dockerfile编写/" class="article-date">
+  <time datetime="2016-11-10T10:23:32.000Z" itemprop="datePublished">2016-11-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Docker学习总结之Dockerfile编写
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用 Dockerfile 可以允许用户创建自定义的镜像<br><a id="more"></a></p>
+<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><p>Dockerfile 由一行行命令语句组成，并且支持以 # 开头的注释行。</p>
+<p>一般的，Dockerfile 分为四部分：基础镜像信息、维护者信息、镜像操作指令和容器启动时执行指令。</p>
+<p>例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"># This dockerfile uses the ubuntu image</div><div class="line"># VERSION 2 - EDITION 1</div><div class="line"># Author: docker_user</div><div class="line"># Command format: Instruction [arguments / command] ..</div><div class="line"></div><div class="line"># Base image to use, this must be set as the first line</div><div class="line">FROM ubuntu</div><div class="line"></div><div class="line"># Maintainer: docker_user &lt;docker_user at email.com&gt; (@docker_user)</div><div class="line">MAINTAINER docker_user docker_user@email.com</div><div class="line"></div><div class="line"># Commands to update the image</div><div class="line">RUN echo &quot;deb http://archive.ubuntu.com/ubuntu/ raring main universe&quot; &gt;&gt; /etc/apt/sources.list</div><div class="line">RUN apt-get update &amp;&amp; apt-get install -y nginx</div><div class="line">RUN echo &quot;\ndaemon off;&quot; &gt;&gt; /etc/nginx/nginx.conf</div><div class="line"></div><div class="line"># Commands when creating a new container</div><div class="line">CMD /usr/sbin/nginx</div></pre></td></tr></table></figure></p>
+<p>其中，一开始必须指明所基于的镜像名称，接下来推荐说明维护者信息。</p>
+<p>后面则是镜像操作指令，例如 RUN 指令，RUN 指令将对镜像执行跟随的命令。每运行一条 RUN 指令，镜像添加新的一层，并提交。</p>
+<p>最后是 CMD 指令，来指定运行容器时的操作命令。</p>
+<p>下面是一个更复杂的例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"># Nginx</div><div class="line">#</div><div class="line"># VERSION               0.0.1</div><div class="line"></div><div class="line">FROM      ubuntu</div><div class="line">MAINTAINER Victor Vieux &lt;victor@docker.com&gt;</div><div class="line"></div><div class="line">RUN apt-get update &amp;&amp; apt-get install -y inotify-tools nginx apache2 openssh-server</div><div class="line"></div><div class="line"># Firefox over VNC</div><div class="line">#</div><div class="line"># VERSION               0.3</div><div class="line"></div><div class="line">FROM ubuntu</div><div class="line"></div><div class="line"># Install vnc, xvfb in order to create a &apos;fake&apos; display and firefox</div><div class="line">RUN apt-get update &amp;&amp; apt-get install -y x11vnc xvfb firefox</div><div class="line">RUN mkdir /.vnc</div><div class="line"># Setup a password</div><div class="line">RUN x11vnc -storepasswd 1234 ~/.vnc/passwd</div><div class="line"># Autostart firefox (might not be the best way, but it does the trick)</div><div class="line">RUN bash -c &apos;echo &quot;firefox&quot; &gt;&gt; /.bashrc&apos;</div><div class="line"></div><div class="line">EXPOSE 5900</div><div class="line">CMD    [&quot;x11vnc&quot;, &quot;-forever&quot;, &quot;-usepw&quot;, &quot;-create&quot;]</div><div class="line"></div><div class="line"># Multiple images example</div><div class="line">#</div><div class="line"># VERSION               0.1</div><div class="line"></div><div class="line">FROM ubuntu</div><div class="line">RUN echo foo &gt; bar</div><div class="line"># Will output something like ===&gt; 907ad6c2736f</div><div class="line"></div><div class="line">FROM ubuntu</div><div class="line">RUN echo moo &gt; oink</div><div class="line"># Will output something like ===&gt; 695d7793cbe4</div><div class="line"></div><div class="line"># You᾿ll now have two images, 907ad6c2736f with /bar, and 695d7793cbe4 with</div><div class="line"># /oink.</div></pre></td></tr></table></figure></p>
+<h2 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h2><p>指令的一般格式为 INSTRUCTION arguments，指令包括 FROM、MAINTAINER、RUN 等。</p>
+<h4 id="FROM"><a href="#FROM" class="headerlink" title="FROM"></a>FROM</h4><p>格式为<code>FROM &lt;image&gt;或FROM &lt;image&gt;:&lt;tag&gt;</code>。</p>
+<p>第一条指令必须为 FROM 指令。并且，如果在同一个Dockerfile中创建多个镜像时，可以使用多个 FROM 指令（每个镜像一次）。</p>
+<h4 id="MAINTAINER"><a href="#MAINTAINER" class="headerlink" title="MAINTAINER"></a>MAINTAINER</h4><p>格式为 MAINTAINER <name>，指定维护者信息。</name></p>
+<h4 id="RUN"><a href="#RUN" class="headerlink" title="RUN"></a>RUN</h4><p>格式为 RUN <command> 或 RUN [“executable”, “param1”, “param2”]。</p>
+<p>前者将在 shell 终端中运行命令，即 /bin/sh -c；后者则使用 exec 执行。指定使用其它终端可以通过第二种方式实现，例如 RUN [“/bin/bash”, “-c”, “echo hello”]。</p>
+<p>每条 RUN 指令将在当前镜像基础上执行指定命令，并提交为新的镜像。当命令较长时可以使用 \ 来换行。</p>
+<h4 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h4><p>支持三种格式</p>
+<ul>
+<li>CMD [“executable”,”param1”,”param2”] 使用 exec 执行，推荐方式；</li>
+<li>CMD command param1 param2 在 /bin/sh 中执行，提供给需要交互的应用；</li>
+<li>CMD [“param1”,”param2”] 提供给 ENTRYPOINT 的默认参数；</li>
+</ul>
+<p>指定启动容器时执行的命令，每个 Dockerfile 只能有一条 CMD 命令。如果指定了多条命令，只有最后一条会被执行。</p>
+<p>如果用户启动容器时候指定了运行的命令，则会覆盖掉 CMD 指定的命令。</p>
+<h4 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h4><p>格式为 EXPOSE <port> [<port>…]。</port></port></p>
+<p>告诉 Docker 服务端容器暴露的端口号，供互联系统使用。在启动容器时需要通过 -P，Docker 主机会自动分配一个端口转发到指定的端口。</p>
+<h4 id="ENV"><a href="#ENV" class="headerlink" title="ENV"></a>ENV</h4><p>格式为 ENV <key> <value>。 指定一个环境变量，会被后续 RUN 指令使用，并在容器运行时保持。</value></key></p>
+<p>例如:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ENV PG_MAJOR 9.3</div><div class="line">ENV PG_VERSION 9.3.4</div><div class="line">RUN curl -SL http://example.com/postgres-$PG_VERSION.tar.xz | tar -xJC /usr/src/postgress &amp;&amp; …</div><div class="line">ENV PATH /usr/local/postgres-$PG_MAJOR/bin:$PATH</div></pre></td></tr></table></figure></p>
+<h4 id="ADD"><a href="#ADD" class="headerlink" title="ADD"></a>ADD</h4><p>格式为 ADD <src> <dest>。</dest></src></p>
+<p>该命令将复制指定的 <src> 到容器中的 <dest>。 其中 <src> 可以是Dockerfile所在目录的一个相对路径；也可以是一个 URL；还可以是一个 tar 文件（自动解压为目录）。</src></dest></src></p>
+<h4 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h4><p>格式为 COPY <src> <dest>。</dest></src></p>
+<p>复制本地主机的 <src>（为 Dockerfile 所在目录的相对路径）到容器中的 <dest>。</dest></src></p>
+<p>当使用本地目录为源目录时，推荐使用 COPY。</p>
+<h4 id="ENTRYPOINT"><a href="#ENTRYPOINT" class="headerlink" title="ENTRYPOINT"></a>ENTRYPOINT</h4><p>两种格式：</p>
+<ul>
+<li>ENTRYPOINT [“executable”, “param1”, “param2”]</li>
+<li>ENTRYPOINT command param1 param2（shell中执行）。</li>
+</ul>
+<p>配置容器启动后执行的命令，并且不可被 docker run 提供的参数覆盖。</p>
+<p>每个 Dockerfile 中只能有一个 ENTRYPOINT，当指定多个时，只有最后一个起效。</p>
+<h4 id="VOLUME"><a href="#VOLUME" class="headerlink" title="VOLUME"></a>VOLUME</h4><p>格式为 VOLUME [“/data”]。</p>
+<p>创建一个可以从本地主机或其他容器挂载的挂载点，一般用来存放数据库和需要保持的数据等。</p>
+<h4 id="USER"><a href="#USER" class="headerlink" title="USER"></a>USER</h4><p>格式为 USER daemon。</p>
+<p>指定运行容器时的用户名或 UID，后续的 RUN 也会使用指定用户。</p>
+<p>当服务不需要管理员权限时，可以通过该命令指定运行用户。并且可以在之前创建所需要的用户，例如：RUN groupadd -r postgres &amp;&amp; useradd -r -g postgres postgres。要临时获取管理员权限可以使用 gosu，而不推荐 sudo。</p>
+<h4 id="WORKDIR"><a href="#WORKDIR" class="headerlink" title="WORKDIR"></a>WORKDIR</h4><p>格式为 WORKDIR /path/to/workdir。</p>
+<p>为后续的 RUN、CMD、ENTRYPOINT 指令配置工作目录。</p>
+<p>可以使用多个 WORKDIR 指令，后续命令如果参数是相对路径，则会基于之前命令指定的路径。例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">WORKDIR /a</div><div class="line">WORKDIR b</div><div class="line">WORKDIR c</div><div class="line">RUN pwd</div></pre></td></tr></table></figure></p>
+<p>则最终路径为 /a/b/c。</p>
+<h4 id="ONBUILD"><a href="#ONBUILD" class="headerlink" title="ONBUILD"></a>ONBUILD</h4><p>格式为 ONBUILD [INSTRUCTION]。</p>
+<p>配置当所创建的镜像作为其它新创建镜像的基础镜像时，所执行的操作指令。</p>
+<p>例如，Dockerfile 使用如下的内容创建了镜像 image-A。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[...]</div><div class="line">ONBUILD ADD . /app/src</div><div class="line">ONBUILD RUN /usr/local/bin/python-build --dir /app/src</div><div class="line">[...]</div></pre></td></tr></table></figure></p>
+<p>如果基于 image-A 创建新的镜像时，新的Dockerfile中使用 FROM image-A指定基础镜像时，会自动执行 ONBUILD 指令内容，等价于在后面添加了两条指令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">FROM image-A</div><div class="line"></div><div class="line">#Automatically run the following</div><div class="line">ADD . /app/src</div><div class="line">RUN /usr/local/bin/python-build --dir /app/src</div></pre></td></tr></table></figure></p>
+<p>使用 ONBUILD 指令的镜像，推荐在标签中注明，例如 ruby:1.9-onbuild。</p>
+<h2 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h2><p>编写完成 Dockerfile 之后，可以通过 docker build 命令来创建镜像。</p>
+<p>基本的格式为 docker build [选项] 路径，该命令将读取指定路径下（包括子目录）的 Dockerfile，并将该路径下所有内容发送给 Docker 服务端，由服务端来创建镜像。因此一般建议放置 Dockerfile 的目录为空目录。也可以通过 .dockerignore 文件（每一行添加一条匹配模式）来让 Docker 忽略路径下的目录和文件。</p>
+<p>要指定镜像的标签信息，可以通过 -t 选项，例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker build -t myrepo/myapp /tmp/test1/</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://qi-zhou.github.io/2016/11/10/Docker学习总结之Dockerfile编写/" data-id="ciwu8yjok0008r8jucxb5xc1s" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/11/15/Ansible学习总结/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Ansible学习总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/07/ELK5-0新特性/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">ELK5.0新特性</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DevOps/">DevOps</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ELK/">ELK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web安全/">web安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安全/">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息队列/">消息队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集群/">集群</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DevOps/" style="font-size: 20px;">DevOps</a> <a href="/tags/Docker/" style="font-size: 20px;">Docker</a> <a href="/tags/ELK/" style="font-size: 10px;">ELK</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/git/" style="font-size: 20px;">git</a> <a href="/tags/web安全/" style="font-size: 20px;">web安全</a> <a href="/tags/安全/" style="font-size: 20px;">安全</a> <a href="/tags/容器/" style="font-size: 10px;">容器</a> <a href="/tags/消息队列/" style="font-size: 10px;">消息队列</a> <a href="/tags/软件/" style="font-size: 10px;">软件</a> <a href="/tags/集群/" style="font-size: 10px;">集群</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/09/18/实用在线工具/">实用在线工具</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Swarm/">Docker学习总结之Docker Swarm</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Compose/">Docker学习总结之Docker Compose</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/iptables服务器实战应用/">iptables服务器实战应用</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Ansible学习总结/">Ansible学习总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 周琪(qi.zhou@shifudao.com)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

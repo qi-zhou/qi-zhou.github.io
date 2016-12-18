@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Ansible学习总结 | 小周私记</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="……….">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ansible学习总结">
+<meta property="og:url" content="https://qi-zhou.github.io/2016/11/15/Ansible学习总结/index.html">
+<meta property="og:site_name" content="小周私记">
+<meta property="og:description" content="……….">
+<meta property="og:updated_time" content="2016-12-18T05:59:01.380Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ansible学习总结">
+<meta name="twitter:description" content="……….">
+  
+    <link rel="alternate" href="/atom.xml" title="小周私记" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?edfbc429dfd69afa3c409df70d65980f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小周私记</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Stay hungry，Stay foolish.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://qi-zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Ansible学习总结" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/11/15/Ansible学习总结/" class="article-date">
+  <time datetime="2016-11-15T10:14:43.000Z" itemprop="datePublished">2016-11-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Ansible学习总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>……….<br><a id="more"></a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在学习批量管理软件时，首先要明确的知道自己需要什么，网上大神很多，他们都研究到源码上了，写了很多介绍绚丽功能的文档，但其实那些功能基本上我们都用不到，经常被各种文档弄得头脑发晕，此文就是为了简单直白的告诉大家ansible的功能，满足大家的基本需求。</p>
+<p>首先确认批量管理我们需要什么：无外乎主机分组管理、实时批量执行命令或脚本、实时批量分发文件或目录、定时同步文件等。</p>
+<h2 id="ansible与saltstack对比"><a href="#ansible与saltstack对比" class="headerlink" title="ansible与saltstack对比"></a>ansible与saltstack对比</h2><p>前一段时间用了saltstack，免不得要谈一下他们的优缺点。两者都是安装和使用都非常方便的批量管理软件。</p>
+<ul>
+<li>salt要安装agent；ansible不需要，通过ssh连接，省掉装agent的事。</li>
+<li>salt在server端要启进程；ansible不需要，但这都无所谓差不多。</li>
+<li>salt与ansible都有模块，可使用任意语言开发模块。</li>
+<li>salt与ansible都使用yaml语言格式编写剧本。</li>
+</ul>
+<p>ansible由于走的是ssh,所以它有认证的过程，以及加密码的过程，这使得ansible非常慢，不适用于大规模环境（指上千台）。</p>
+<p>为什么我放弃salt呢，首先服务器不多（百台左右），其次，salt的master端与minion端TCP连接经常断开，导致有时执行命令时会漏机器，这简直让我忍无可忍。听说最新版的salt好了很多，但由于公司系统是定制的，安装软件特别麻烦（15M的系统，解决依赖就是个大问题），我还是选择了ansible。</p>
+<h2 id="ansible安装"><a href="#ansible安装" class="headerlink" title="ansible安装"></a>ansible安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">yum installparamiko PyYAML jinja2 httplib2  #ansible所需依赖包</div><div class="line">git clonehttps://github.com/ansible/ansible.git</div><div class="line">cd ansible</div><div class="line">python setup.pyinstall</div><div class="line">cp ansible/examples/ansible.cfg/etc/ansible/   #拷贝ansible默认的配置文件，也可不拷贝。</div></pre></td></tr></table></figure>
+<p>安装完成</p>
+<p>在开始ansible操作受控机器前，需要配置好ssh免密码登陆</p>
+<h2 id="ansible命令参数介绍"><a href="#ansible命令参数介绍" class="headerlink" title="ansible命令参数介绍"></a>ansible命令参数介绍</h2><p>Ansible中的临时命令的执行是通过Ad-Hoc来完成，能够快速执行，而且不需要保存执行的命令，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible-i ～/hosts all -m command -a ‘who’ -u root</div></pre></td></tr></table></figure></p>
+<p>主要参数如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-u username          #指定ssh连接的用户名，即执行后面命令的用户</div><div class="line">-i inventory_file    #指定所使用的inventory文件的位置，默认为/etc/ansible/hosts</div><div class="line">-m module            #指定使用的模块，默认为command</div><div class="line">-f 10                #指定并发数,并发量大的时候，提高该值</div><div class="line">--sudo [-k]          #当需要root权限执行的化，-k参数用来输入root密码</div></pre></td></tr></table></figure></p>
+<h2 id="ansible主机分组管理："><a href="#ansible主机分组管理：" class="headerlink" title="ansible主机分组管理："></a>ansible主机分组管理：</h2><p>配置好ssh免密码登陆后，就该把那些机器加入到hosts文件中，hosts不限路径，可用-i参数指定路径。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@yang~]# cat /etc/ansible/hosts </div><div class="line">[KD1]    #分组名</div><div class="line">1.1.1.1:62222    #此处对于端口进行指定，毕竟有些服务器ssh端口打开的不一样。</div><div class="line">1.1.1.2:62222</div><div class="line">[KD2]</div><div class="line">1.1.1.3:62222</div><div class="line">1.1.1.4:62222</div></pre></td></tr></table></figure></p>
+<p>分组执行效果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@yang~]# ansible -i /etc/ansible/hosts KD1 -m shell -a ‘uptime‘</div><div class="line">1.1.1.1| success | rc=0 &gt;&gt;</div><div class="line"> 11:56:31 up 2 days, 17:42, load average: 0.41,0.34, 0.32</div><div class="line"> </div><div class="line">1.1.1.2| success | rc=0 &gt;&gt;</div><div class="line"> 11:57:03 up 2 days, 17:44, load average: 0.34,0.28, 0.25</div></pre></td></tr></table></figure></p>
+<p>连续的主机名使用”;”号分隔，如:<code>ansible -i /etc/ansible/hosts‘KD1;1.1.1.3‘ -m shell -a ‘uptime‘</code></p>
+<p>还可以使用脚本动态获取主机的方式：</p>
+<p>官方地址：<a href="http://docs.ansible.com/intro_dynamic_inventory.html" target="_blank" rel="external">http://docs.ansible.com/intro_dynamic_inventory.html</a></p>
+<p>网络文档：<a href="http://noops.me/?p=1446" target="_blank" rel="external">http://noops.me/?p=1446</a></p>
+<h2 id="ansible实时批量执行命令和脚本："><a href="#ansible实时批量执行命令和脚本：" class="headerlink" title="ansible实时批量执行命令和脚本："></a>ansible实时批量执行命令和脚本：</h2><p>批量执行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ansible-i /etc/ansible/hosts all -m shell -a ‘uptime‘</div><div class="line">ansible-i /etc/ansible/hosts all -m command -a ‘uptime‘</div><div class="line">#shell模块与command模块细节区别我也没分清在哪儿。</div></pre></td></tr></table></figure></p>
+<p>批量执行脚本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ansibleall -m script -a &quot;/root/123.sh&quot;  #</div><div class="line">#此命令是在远程服务器上执行本地的脚本</div></pre></td></tr></table></figure></p>
+<p>网上文档说，复杂的命令用playbook管理，我实在不认同，作为运维人员，我写一个脚本多简单，干嘛去花太多时间研究playbook的格式与用法呢？</p>
+<p>再说，ansible对于一些安装包的管理，我可以事先做好rpm包，然后使用copy模块分发过去就是，为什么去研究太多的用法？</p>
+<h2 id="ansible实时批量拷贝文件或目录"><a href="#ansible实时批量拷贝文件或目录" class="headerlink" title="ansible实时批量拷贝文件或目录"></a>ansible实时批量拷贝文件或目录</h2><p>从ansible-doc copy中的帮助信息得知，ansible的copy模块是围绕rsync的包装，所以它是增量而不是全量的拷贝。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ansibleMachineName -m copy -a ‘src=/etc/fstab  dest=/tmp/fstabmode=644 owner=root‘   #拷贝文件</div><div class="line">ansibleMachineName -m copy -a ‘src=/etc/test dest=/root/test mode=755 owner=root ‘  #此处test为目录</div></pre></td></tr></table></figure></p>
+<h2 id="ansible定时同步文件"><a href="#ansible定时同步文件" class="headerlink" title="ansible定时同步文件"></a>ansible定时同步文件</h2><p>既然ansible的copy模块是rsync的包装，那我定期执行copy目录的命令，就能完成文件的定时同步了。如果文件变化，就会同步过去，如果没变化，就不会拷贝。以后只要把要同步的文件放到该目录下即可。</p>
+<h2 id="ansible模块帮助"><a href="#ansible模块帮助" class="headerlink" title="ansible模块帮助"></a>ansible模块帮助</h2><p>执行命令用到的那些模块是干嘛的？使用ansible-doc查看帮助吧。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ansible-doc-l       #查看模块列表</div><div class="line">ansible-doc  copy    #查看copy模块的详细信息</div><div class="line">ansible-doc  script #查看script模块的详细信息</div></pre></td></tr></table></figure></p>
+<p>常用的模块有ping,copy,shell,command,script等。更多模块的使用请自行探索吧，我比较懒，满足我的需求后就不想动脑了。</p>
+<h2 id="ansibleplaybook的使用"><a href="#ansibleplaybook的使用" class="headerlink" title="ansibleplaybook的使用"></a>ansibleplaybook的使用</h2><p>其实playbook就是把上述在命令行的操作，以yml格式写在文件中来执行而已。复杂的playbook只是更多的命令行操作的集合。</p>
+<p>此例：当某个文件变化后，移走该文件。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">#cat  playbook.yml</div><div class="line">---</div><div class="line">- hosts:local  # hosts中指定</div><div class="line">  remote_user: yang  # 如果和当前用户一样，则无需指定</div><div class="line">  tasks:</div><div class="line">      - name: whoami</div><div class="line">        copy: src=~/hosts dest=~/hosts.dest  #  本地拷贝到远端</div><div class="line">        notify: # 如果copy执行完之后~/hosts.dest文件发送了变化，则执行</div><div class="line">            - clear copy  # 调用handler中的clear copy定义的动作</div><div class="line">  handlers:</div><div class="line">      - name: clear copy</div><div class="line">        shell: ‘mv ~/hosts.dest hosts.del‘  # 假装删除</div></pre></td></tr></table></figure></p>
+<p>注解：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tasks定义了playbook中要执行的任务，包括任务名name以及具体的任务内容</div><div class="line">notify：类似于Salt的require，表示当前面的任务完成后且有相应的变化时调用后面定义的handler</div><div class="line">handlers：与notify结合使用，被调用的handler的具体定义</div></pre></td></tr></table></figure></p>
+<p>playbook执行方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ansible-playbookplaybook.yml    </div><div class="line">#主机名、执行命令都已在yml中指定了。</div></pre></td></tr></table></figure></p>
+<h2 id="ansible网上参考地址："><a href="#ansible网上参考地址：" class="headerlink" title="ansible网上参考地址："></a>ansible网上参考地址：</h2><p>ansible快速上手：<a href="https://linuxtoy.org/archives/hands-on-with-ansible.html" target="_blank" rel="external">https://linuxtoy.org/archives/hands-on-with-ansible.html</a></p>
+<p>Ansible:自动化工具：<a href="http://rangochen.blog.51cto.com/2445286/1425276" target="_blank" rel="external">http://rangochen.blog.51cto.com/2445286/1425276</a></p>
+<p>自动化工具ansible中文指南：<a href="http://www.aikaiyuan.com/6299.html" target="_blank" rel="external">http://www.aikaiyuan.com/6299.html</a></p>
+<p>运维自动化之ansibleplaybook安装nginx：<a href="http://dl528888.blog.51cto.com/2382721/1438847" target="_blank" rel="external">http://dl528888.blog.51cto.com/2382721/1438847</a></p>
+<p>Ansible之安装部署及常用模块的使用介绍：<a href="http://yanshisan.blog.51cto.com/7879234/1384405" target="_blank" rel="external">http://yanshisan.blog.51cto.com/7879234/1384405</a></p>
+<p>Ansible状态管理：<a href="http://xdays.info/ansible%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86.html" target="_blank" rel="external">http://xdays.info/ansible%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86.html</a></p>
+<p>ansible学习笔记（二）初始化操作系统：ansible变量使用：<a href="http://laowafang.blog.51cto.com/251518/141847" target="_blank" rel="external">http://laowafang.blog.51cto.com/251518/141847</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://qi-zhou.github.io/2016/11/15/Ansible学习总结/" data-id="ciwu8yjnm0003r8ju0cnsgtz2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DevOps/">DevOps</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/11/15/iptables服务器实战应用/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          iptables服务器实战应用
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/10/Docker学习总结之Dockerfile编写/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Docker学习总结之Dockerfile编写</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DevOps/">DevOps</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ELK/">ELK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web安全/">web安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安全/">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息队列/">消息队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集群/">集群</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DevOps/" style="font-size: 20px;">DevOps</a> <a href="/tags/Docker/" style="font-size: 20px;">Docker</a> <a href="/tags/ELK/" style="font-size: 10px;">ELK</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/git/" style="font-size: 20px;">git</a> <a href="/tags/web安全/" style="font-size: 20px;">web安全</a> <a href="/tags/安全/" style="font-size: 20px;">安全</a> <a href="/tags/容器/" style="font-size: 10px;">容器</a> <a href="/tags/消息队列/" style="font-size: 10px;">消息队列</a> <a href="/tags/软件/" style="font-size: 10px;">软件</a> <a href="/tags/集群/" style="font-size: 10px;">集群</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/09/18/实用在线工具/">实用在线工具</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Swarm/">Docker学习总结之Docker Swarm</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Compose/">Docker学习总结之Docker Compose</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/iptables服务器实战应用/">iptables服务器实战应用</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Ansible学习总结/">Ansible学习总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 周琪(qi.zhou@shifudao.com)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

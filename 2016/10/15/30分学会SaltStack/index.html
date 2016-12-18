@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>30分学会SaltStack | 小周私记</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="用salt集中配置管理服务器……">
+<meta property="og:type" content="article">
+<meta property="og:title" content="30分学会SaltStack">
+<meta property="og:url" content="https://qi-zhou.github.io/2016/10/15/30分学会SaltStack/index.html">
+<meta property="og:site_name" content="小周私记">
+<meta property="og:description" content="用salt集中配置管理服务器……">
+<meta property="og:image" content="http://blog.cunss.com/wp-content/uploads/2014/02/20140210173734_68950.png">
+<meta property="og:updated_time" content="2016-12-18T05:59:01.380Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="30分学会SaltStack">
+<meta name="twitter:description" content="用salt集中配置管理服务器……">
+<meta name="twitter:image" content="http://blog.cunss.com/wp-content/uploads/2014/02/20140210173734_68950.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小周私记" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?edfbc429dfd69afa3c409df70d65980f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小周私记</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Stay hungry，Stay foolish.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://qi-zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-30分学会SaltStack" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/15/30分学会SaltStack/" class="article-date">
+  <time datetime="2016-10-15T13:06:57.000Z" itemprop="datePublished">2016-10-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      30分学会SaltStack
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>用salt集中配置管理服务器……<br><a id="more"></a></p>
+<h2 id="SaltStack简介"><a href="#SaltStack简介" class="headerlink" title="SaltStack简介"></a>SaltStack简介</h2><p>salt是一个异构平台基础设置管理工具(虽然我们通常只用在Linux上)，使用轻量级的通讯器ZMQ,用Python写成的批量管理工具，完全开源，遵守Apache2协议，与Puppet，Chef功能类似，有一个强大的远程执行命令引擎，也有一个强大的配置管理系统，通常叫做Salt State System。</p>
+<p>SaltStack除了传统的C/S架构外,其实还有Masterless架构,如果采用Masterless架构,我们就不需要单独安装一台SaltStack Master机器,只需要在每台机器上安装Minion,然后采用本机只负责对本机的配置管理工作机制服务模式。</p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>SaltStack 采用 C/S模式，server端就是salt的master，client端就是minion，minion与master之间通过ZeroMQ消息队列通信.</p>
+<p>minion上线后先与master端联系，把自己的pub key发过去，这时master端通过salt-key -L命令就会看到minion的key，接受该minion-key后，也就是master与minion已经互信.</p>
+<p>master可以发送任何指令让minion执行了，salt有很多可执行模块，比如说cmd模块.</p>
+<p>这些模块是python写成的文件，里面会有好多函数，如cmd.run，当我们执行<code>salt &#39;*&#39; cmd.run &#39;uptime&#39;</code>的时候，master下发任务匹配到的minion上去，minion执行模块函数，并返回结果。master监听4505和4506端口，4505对应的是ZMQ的PUB system，用来发送消息，4506对应的是REP system是来接受消息的。</p>
+<h3 id="具体步骤如下"><a href="#具体步骤如下" class="headerlink" title="具体步骤如下"></a>具体步骤如下</h3><ol>
+<li>Salt stack的Master与Minion之间通过ZeroMq进行消息传递，使用了ZeroMq的发布-订阅模式，连接方式包括tcp，ipc</li>
+<li>salt命令，将cmd.run ls命令从<code>salt.client.LocalClient.cmd_cli</code>发布到master，获取一个Jodid，根据jobid获取命令执行结果。</li>
+<li>master接收到命令后，将要执行的命令发送给客户端minion。</li>
+<li>minion从消息总线上接收到要处理的命令，交给<code>minion._handle_aes</code>处理</li>
+<li><code>minion._handle_aes</code>发起一个本地线程调用cmdmod执行ls命令。线程执行完ls后，调用<code>minion._return_pub</code>方法，将执行结果通过消息总线返回给master</li>
+<li>master接收到客户端返回的结果，调用<code>master._handle_aes</code>方法，将结果写的文件中</li>
+<li><code>salt.client.LocalClient.cmd_cli</code>通过轮询获取Job执行结果，将结果输出到终端。</li>
+</ol>
+<h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">service salt-master start</div><div class="line">service salt-minion start</div></pre></td></tr></table></figure>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;*&apos; test.ping   ##查看在线minion</div></pre></td></tr></table></figure>
+<h3 id="salt-key-密钥管理，通常在master端执行"><a href="#salt-key-密钥管理，通常在master端执行" class="headerlink" title="salt-key 密钥管理，通常在master端执行"></a>salt-key 密钥管理，通常在master端执行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">salt-key [options]</div><div class="line">salt-key -L              ##查看所有minion-key</div><div class="line">salt-key -a &lt;key-name&gt;   ##接受某个minion-key</div><div class="line">salt-key -d &lt;key-name&gt;   ##删除某个minion-key</div><div class="line">salt-key -A              ##接受所有的minion-key</div><div class="line">salt-key -D              ##删除所有的minion-key</div></pre></td></tr></table></figure>
+<h3 id="salt-call-该命令通常在minion上执行，minion自己执行可执行模块，不是通过master下发job-一般在使用时加上-local参数，这种方式相当于Masterless模式"><a href="#salt-call-该命令通常在minion上执行，minion自己执行可执行模块，不是通过master下发job-一般在使用时加上-local参数，这种方式相当于Masterless模式" class="headerlink" title="salt-call 该命令通常在minion上执行，minion自己执行可执行模块，不是通过master下发job,一般在使用时加上--local参数，这种方式相当于Masterless模式"></a>salt-call 该命令通常在minion上执行，minion自己执行可执行模块，不是通过master下发job,一般在使用时加上<code>--local</code>参数，这种方式相当于<code>Masterless</code>模式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">salt-call [options] &lt;function&gt; [arguments]</div><div class="line">salt-call test.ping           ##自己执行test.ping命令</div><div class="line">salt-call cmd.run &apos;ifconfig&apos;  ##自己执行cmd.run函数</div></pre></td></tr></table></figure>
+<h3 id="salt-cp-分发文件到minion上-不支持目录分发，通常在master运行"><a href="#salt-cp-分发文件到minion上-不支持目录分发，通常在master运行" class="headerlink" title="salt-cp 分发文件到minion上,不支持目录分发，通常在master运行"></a>salt-cp 分发文件到minion上,不支持目录分发，通常在master运行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">salt-cp [options] &apos;&lt;target&gt;&apos; SOURCE DEST</div><div class="line">salt-cp &apos;*&apos; testfile.html /tmp</div><div class="line">salt-cp &apos;test*&apos; index.html /tmp/a.html</div></pre></td></tr></table></figure>
+<h3 id="salt-ssh-有点类似ansible-好处就是你不需要在客户端安装minion，也不需要安装master"><a href="#salt-ssh-有点类似ansible-好处就是你不需要在客户端安装minion，也不需要安装master" class="headerlink" title="salt-ssh 有点类似ansible,好处就是你不需要在客户端安装minion，也不需要安装master"></a>salt-ssh 有点类似ansible,好处就是你不需要在客户端安装minion，也不需要安装master</h3><p>从0.17.0开始salt加入salt ssh，salt ssh不需要在客户端安装salt-minion包了，是通过ssh协议来完成运城命令执行，状态管理等任务的。它是作为master-minion形式的补充出现的，原理是有一个花名册的文件，里面记录了各个minion的信息，ip,账号，密码，等，需要远程执行命令时，直接通过ssh来执行，速度与master-minion形式慢很多。</p>
+<p>使用： 配置/etc/salt/roster格式如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">test1:</div><div class="line">  host: 192.168.1.133</div><div class="line">  user: salt</div><div class="line">  passwd: redhat</div><div class="line">  sudo: True</div><div class="line">  port: 22</div><div class="line">  timeout: 5</div><div class="line"></div><div class="line">test2:</div><div class="line">  host: 192.168.1.134</div><div class="line">  user: root</div><div class="line">  passwd: redhat</div><div class="line">test3:</div><div class="line">  host: 192.168.1.135</div><div class="line">  user: sa</div><div class="line">  sudo: True</div></pre></td></tr></table></figure></p>
+<p>说明: test1我们定义了所有常见的选项，test2我们用了超级用户，使用账号密码，test3我们使用普通用户，没有写密码，就是通过key来认证了，并且以sudo方式执行的，需要注意的是1.key认证用的是/etc/salt/pki/master/ssh/目录下的密钥。2.如果普通用户的话，需要有sudo权限，因为一些功能，包括test.ping都需要sudo权限。</p>
+<p>测试<code>salt-ssh</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">salt-ssh &apos;*&apos; test.ping</div><div class="line">salt-ssh &apos;*&apos; -r &apos;ls /&apos;   ##执行shell命令</div><div class="line">salt-ssh &apos;*&apos; cmd.run &apos;ls /&apos; ##用模块来执行也是可以的</div><div class="line">salt-ssh &apos;*&apos; state.apply   ##执行状态</div></pre></td></tr></table></figure></p>
+<h4 id="Target参数表"><a href="#Target参数表" class="headerlink" title="Target参数表"></a>Target参数表</h4><p><img src="http://blog.cunss.com/wp-content/uploads/2014/02/20140210173734_68950.png" alt=""></p>
+<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><ul>
+<li><p>查看Minion支持的所有module列表的命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.list_modules</div></pre></td></tr></table></figure>
+</li>
+<li><p>查看cmd module的所有function的命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.list_functions cmd</div></pre></td></tr></table></figure>
+</li>
+<li><p>查看cmd module的详细用法与例子的命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.doc cmd</div></pre></td></tr></table></figure>
+</li>
+<li><p>要查看Minion支持的所有states列表,命令如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.list_state_modules</div></pre></td></tr></table></figure>
+</li>
+<li><p>查看file.states的所有function,命令如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.list_state_function</div></pre></td></tr></table></figure>
+</li>
+<li><p>要查看file.states的详细用法与例子,命令如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.state_doc file</div></pre></td></tr></table></figure>
+</li>
+<li><p>要查看file.managed states的详细用法与例子,命令如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.state_doc file.manage</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="关于saltstack-grains"><a href="#关于saltstack-grains" class="headerlink" title="关于saltstack grains"></a>关于<code>saltstack grains</code></h2><p>下面我们先介绍下比较简单的Grains自定义方法,就是通过Minion配置文件定义。前面已经讲到Minions的Grains信息是在Minions服务启动的时候汇报给Matser的,所以我们需要修改好Minion配置文件后重启Minion服务。在Minion的/etc/salt/minion配置文件中默认有一些注释行。这里就是在Minion上的minion配置文件中如何定义Grains信息例子。下面只需根据自动的需求按照以下格式去填写相应的键值对就行,大家注意格式就行,SaltStack的配置文件的默认格式都是YAML格式:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">grains:</div><div class="line">  roles:</div><div class="line">    - webserver</div><div class="line">    - memcache</div></pre></td></tr></table></figure></p>
+<p>Master上查看定义的Grains信息是否生效:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; grains.item roles</div><div class="line"></div><div class="line">Minion:</div><div class="line">----------</div><div class="line">roles:</div><div class="line">- webserver</div><div class="line">- memcache</div></pre></td></tr></table></figure></p>
+<p>下面我们通过Grains模块来设置并定义Grains信息:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; grains.append roles test</div></pre></td></tr></table></figure></p>
+<p>更多用法查看：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt&apos;Minion&apos;sys.doc grains</div></pre></td></tr></table></figure></p>
+<h2 id="关于saltstack-pillar"><a href="#关于saltstack-pillar" class="headerlink" title="关于saltstack pillar"></a>关于<code>saltstack pillar</code></h2><p>Pillar在salt中是非常重要的组成部分，利用它可以完成很强大的功能，它可以指定一些信息到指定的minion上，不像grains一样是分发到所有Minion上的，它保存的数据可以是动态的,Pillar以sls来写的，格式是键值对</p>
+<h3 id="适用情景："><a href="#适用情景：" class="headerlink" title="适用情景："></a>适用情景：</h3><ol>
+<li><p>比较敏感的数据，比如密码，key等</p>
+</li>
+<li><p>特殊数据到特定Minion上</p>
+</li>
+<li><p>动态的内容</p>
+</li>
+<li><p>其他数据类型</p>
+</li>
+</ol>
+<p>查看Minion的Pillar信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;*&apos; pillar.items</div></pre></td></tr></table></figure></p>
+<p>查看某个Pillar值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">salt &apos;*&apos; pillar.item &lt;key&gt;      #只能看到顶级的</div><div class="line">salt &apos;*&apos; pillar.get &lt;key&gt;:&lt;key&gt; #可以取到更小粒度的</div></pre></td></tr></table></figure></p>
+<p>编写pillar数据</p>
+<ol>
+<li><p>指定pillar_roots，默认是/srv/pillar(可通过修改master配置文件修改),建立目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mkdir /srv/pillar</div><div class="line">cd /srv/pillar</div></pre></td></tr></table></figure>
+</li>
+<li><p>编辑一个pillar数据文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">vim test1.sls</div><div class="line">    name: &apos;salt&apos;</div><div class="line">    users:   </div><div class="line">        hadoop: 1000</div><div class="line">        redhat: 2000</div><div class="line">        ubuntu: 2001</div></pre></td></tr></table></figure>
+</li>
+<li><p>建立top file指定minion到pillar数据文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">vim top.sls</div><div class="line">base:  </div><div class="line">     &apos;*&apos;:    </div><div class="line">         - test1</div></pre></td></tr></table></figure>
+</li>
+<li><p>刷新Pillar数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;*&apos; saltutil.refresh_pillar</div></pre></td></tr></table></figure>
+</li>
+<li><p>测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">salt &apos;*&apos; pillar.get name</div><div class="line">salt &apos;*&apos; pillar.item name</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>在state中通过jinja使用pillar数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">vim /srv/salt/user.sls</div><div class="line">&#123;% for user, uid in pillar.get(&apos;users&apos;, &#123;&#125;).items() %&#125;  ##pillar.get(&apos;users&apos;,&#123;&#125;)可用pillar[&apos;users&apos;]代替，前者在没有得到值的情况下，赋默认值</div><div class="line"></div><div class="line">&#123;&#123; user &#125;&#125;:   </div><div class="line">   user.present:     </div><div class="line">        - uid: &#123;&#123; uid &#125;&#125;</div><div class="line">&#123;% endfor %&#125;</div></pre></td></tr></table></figure>
+<p>当然也可以不使用jinja模板<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">vim /srv/salt/user2.sls</div><div class="line">&#123;&#123; pillar.get(&apos;name&apos;,&apos;&apos;) &#125;&#125;:</div><div class="line">     user.present:   </div><div class="line">        - uid: 2002</div></pre></td></tr></table></figure></p>
+<p>通过jinja模板配合grains指定pillar数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/srv/pillar/pkg.sls</div><div class="line"></div><div class="line">pkgs:</div><div class="line"> &#123;% if grains[&apos;os_family&apos;] == &apos;RedHat&apos; %&#125;</div><div class="line"> apache: httpd</div><div class="line"> vim: vim-enhanced</div><div class="line"> &#123;% elif grains[&apos;os_family&apos;] == &apos;Debian&apos; %&#125;</div><div class="line"> apache: apache2</div><div class="line"> vim: vim</div><div class="line"> &#123;% elif grains[&apos;os&apos;] == &apos;Arch&apos; %&#125;</div><div class="line"> apache: apache</div><div class="line"> vim: vim</div><div class="line"> &#123;% endif %&#125;</div></pre></td></tr></table></figure></p>
+<p>通过以下命令查看关于Pillar相关的一些模块用法:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.list_functions pillar</div></pre></td></tr></table></figure></p>
+<p>详细用法与例子可以通过命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; sys.doc pillar</div></pre></td></tr></table></figure></p>
+<h2 id="关于saltstack-mine"><a href="#关于saltstack-mine" class="headerlink" title="关于saltstack mine"></a>关于<code>saltstack mine</code></h2><p>Mine是SaltStack收集Minion数据存储到Master的一个组件,它的功能与Grains有些类似,Mine可以指定任何Minion模块去采集数据。但是Master只能存储Minion收集上来的最近一段的数据,Mine的主要应用场景是配合前端负载均衡动态获取Mine汇报信息,来动态生成配置文件。例如官网通过mine.get指定业务设备的网卡地址动态生成haprxoy.cfg文件。Mine还支持get docker容器的地址,可简单实现动态添加业务。Mine配置目前支持两种方式,第一种是通过在Minion配置文件中定义,另一种是通过模块的方式去下发Mine采集任务。关于Mine模块的更多用法可以使用sys.doc mine命令查看。下面我们通过模块的方式下发一个采集docker0网卡地址的任务:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; mine.send network.ip_addrs</div><div class="line">salt &apos;Minion&apos; mine.get &apos;Minion&apos; network.ip_addrs</div></pre></td></tr></table></figure></p>
+<h2 id="关于渲染器render-system"><a href="#关于渲染器render-system" class="headerlink" title="关于渲染器render system"></a>关于渲染器render system</h2><p>我们上面也提过salt默认的渲染器是yaml_jinja,salt处理我们的sls文件时，会先把文件用jinja2处理，然后传给ymal处理器在处理，然后生成的是salt需要的python数据类型。除了yaml_jinja还有yaml_mako,yaml_wempy,py,pydsl。下面来看个样例吧，</p>
+<p>apache/init.sls文件内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">apache:</div><div class="line">     pkg: installed:   </div><div class="line">       &#123;% if grains[&apos;os&apos;] == &apos;RedHat&apos; %&#125;</div><div class="line">       - name: httpd</div><div class="line">       &#123;% endif %&#125;</div><div class="line">     service.running:   </div><div class="line">       &#123;% if grains[&apos;os&apos;] == &apos;Redhat&apos; %&#125;</div><div class="line">       - name: httpd</div><div class="line">       &#123;% endif %&#125;</div><div class="line">       - watch:</div><div class="line">         - pkg: apache</div></pre></td></tr></table></figure></p>
+<p>这个样例很简单，就是加了个判断，如果Minion的grains的os是RedHat那么apache的包名是httpd，默认是apache,我们知道在别的Linux发行版上，如ubuntu，suse他们的apache的包名就是叫apache，而在redhat系上则叫httpd,所以才有了这个判断写法，下面的service也是如此。我们着重说语法，jinja中判断，循环等标签是放在{% %}中的，通常也会有结束标签{% end** %},而变量是放在 {{ }}中的，salt,grains,pilla是salt中jinja里面的三个特殊字典，salt是包含所有salt函数对象的字典，grains是包含minion上grains的字典，pillar是包含minion上pillar的字典。</p>
+<p>示例：for user/init.sls文件内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;% set users = [&apos;jerry&apos;,&apos;tom&apos;,&apos;gaga&apos;] %&#125;</div><div class="line">&#123;% for user in users %&#125;</div><div class="line">&#123;&#123; user &#125;&#125;:</div><div class="line">     user.present:  </div><div class="line">           - shell: /bin/bash</div><div class="line">           - home: /home/&#123;&#123; user &#125;&#125;</div><div class="line">&#123;% endfor %&#125;</div></pre></td></tr></table></figure></p>
+<p>示例；salt字典 user/init.sls文件内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&#123;% if salt[&apos;cmd.run&apos;](&apos;uname -i&apos;) == &apos;x86_64&apos; %&#125;</div><div class="line">hadoop:</div><div class="line">    user.present:   </div><div class="line">        - shell: /bin/bash        - home: /home/hadoop</div><div class="line">&#123;% elif salt[&apos;cmd.run&apos;](&apos;uname -i&apos;) == &apos;i386&apos; %&#125;</div><div class="line">openstack:</div><div class="line">    user.present:   </div><div class="line">        - shell: /bin/bash</div><div class="line">        - home: /home/openstack</div><div class="line">&#123;% else %&#125;</div><div class="line">django:</div><div class="line">     user.present:   </div><div class="line">        - shell: /sbin/nologin</div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="依赖关系系统requisite-system"><a href="#依赖关系系统requisite-system" class="headerlink" title="依赖关系系统requisite system"></a>依赖关系系统requisite system</h2><p>前面我们已经用过了依赖关系系统，就是定义状态与状态之间的依赖关系的，经常遇到的依赖系统的函数有’require’和’watch’和它们的变种’require_in’,’watch_in’,require和watch有什么区别吗？</p>
+<p>1.不是所有的state都支持watch,比较常用的是service</p>
+<p>2.watch定义的依赖条件发生变化时会执行一些动作，如当配置文件改变时，service会重启</p>
+<p>示例: apache/init.sls文件内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/etc/httpd/httpd.conf:</div><div class="line"> file:   </div><div class="line">    - managed</div><div class="line">    - source: salt://httpd/httpd.conf</div><div class="line"></div><div class="line">httpd:</div><div class="line"> pkg:   </div><div class="line">    - installed</div><div class="line"> service:   </div><div class="line">   - running</div><div class="line">   - require:     </div><div class="line">     - pkg: httpd</div><div class="line">   - watch:     </div><div class="line">     - file: /etc/httpd/httpd.conf            ##当httpd.conf改变时，重启httpd服务</div></pre></td></tr></table></figure></p>
+<p>require与require_in, watch与watch_in</p>
+<p>require,watch是指依赖，require_in,watch_in是指被依赖</p>
+<p>a reuire b 那么就是b require_in a</p>
+<p>a watch b 那么就是b watch_in a</p>
+<p>示例: apache/init.sls文件内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/etc/httpd/httpd.conf:</div><div class="line"> file:   </div><div class="line">    - managed</div><div class="line">    - source: salt://httpd/httpd.conf</div><div class="line">    - watch_in:</div><div class="line">        - service: httpd</div><div class="line"> httpd:</div><div class="line"> pkg:   </div><div class="line">    - installed</div><div class="line">    - require_in:</div><div class="line">    - service: httpd</div><div class="line"> service:   </div><div class="line">    - running</div></pre></td></tr></table></figure></p>
+<h2 id="YAML"><a href="#YAML" class="headerlink" title="YAML"></a>YAML</h2><p>什么是YAML？</p>
+<ul>
+<li>维基上第一句话说的是“是一个可读性高，用来表达资料序列的格式。” ,YAML是”YAML Ain’t a Markup Language”（YAML不是一种标记语言）的递回缩写。</li>
+</ul>
+<p>编写YAML</p>
+<p>初期对于新手来说，这个最要命。不注意以下操作就要出错，本人以前是经常犯错。</p>
+<ul>
+<li>缩进要用2个空格，不能用tab，更不能tab和空格混用。以前写Python tab顺手了，就常犯错。</li>
+<li>YAML是用空格来表示分层结构的，如第一层，（前面2个空格） 第二层，(前面4个空格)</li>
+<li>YAML的冒号是用来表示一个K/V的字典的。</li>
+</ul>
+<p>例： <code>file: roddyname</code> 就表示 <code>{&#39;file&#39;:&#39;roddyname&#39;}</code></p>
+<p>还可以写成<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">file:</div><div class="line">  roddyname</div></pre></td></tr></table></figure></p>
+<ul>
+<li>YAML使用短横线表示列表。</li>
+</ul>
+<p>例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">– user1</div><div class="line">– user2</div><div class="line">– user3</div></pre></td></tr></table></figure></p>
+<p>对应的表示就是[‘user1′,’user2′,’user3’]</p>
+<p>如果看到这种表达方式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">username:</div><div class="line">  – user1</div><div class="line">  – user2</div><div class="line">  – user3</div></pre></td></tr></table></figure></p>
+<p>对应的表示就是<code>{&#39;username&#39;:[&#39;user1′,&#39;user2′,&#39;user3&#39;]}</code></p>
+<p>我靠，好清晰，对了撒。这下子搞懂了，唉，以前不晓得杂个写。呵呵</p>
+<h2 id="jinja"><a href="#jinja" class="headerlink" title="jinja"></a>jinja</h2><ul>
+<li>什么是jinja？</li>
+</ul>
+<p>尼玛，我就觉得这个名字有点日怪，以前读的时候扭捏了半天。这又是个什么鬼？<br>jinja是一种模板引擎，是基于Python的，相当于php 的 smarty。哦，基本上了解了。可以基于这个引擎提前做一些操作嘛</p>
+<p>salt默认是用的<code>yaml_jinja</code>的渲染器。</p>
+<p>工作流程：</p>
+<ol>
+<li>通过jinjia2模板引擎处理SLS</li>
+<li>调用YAML解析器</li>
+</ol>
+<p>如何使用:</p>
+<p>在salt中 ,files和templates都使用了file这个states模块。但是是通过template这个标识来指明是模板还是普通文件。<br>OK。看个他的样例</p>
+<p>jinja的使用方法：</p>
+<ol>
+<li>在file模块sls文件中使用<code>template ：- template: jinja</code></li>
+<li>在模板文件里面使用变量</li>
+<li>指定变量列表：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">defaults: server01</div><div class="line">SERVER: &quot;192.168.1.2&quot;</div><div class="line">PORT: &quot;22&quot;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">使用grains： &#123;&#123;grains[&apos;hostname&apos;]&#125;&#125;</div><div class="line"></div><div class="line">使用模块: &#123;&#123; salt[&apos;network.hw_addr&apos;](&apos;eth0&apos;) &#125;&#125;</div><div class="line"></div><div class="line">使用pillar: &#123;&#123; pillar[&apos;apache&apos;][&apos;port&apos;] &#125;&#125; 两边有空格</div></pre></td></tr></table></figure>
+<h2 id="states入门"><a href="#states入门" class="headerlink" title="states入门"></a>states入门</h2><p>首先介绍使用states的流程:</p>
+<ul>
+<li>编写top.sls文件(非必须)。</li>
+<li>编写states.sls文件。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">SaltStack@Master: cat /srv/salt/one/test.conf</div><div class="line">SaltStack@Master: cat /srv/salt/one/init.sls</div><div class="line">/tmp/foo.conf:  #id</div><div class="line">  file.managed:  #file states 的 managed function</div><div class="line">    - source: salt://one/foo.conf  # 文件来源</div><div class="line">    - user: root    # 文件属主</div><div class="line">    - group: root   # 文件属组</div><div class="line">    - mode: 644     # 文件权限</div><div class="line">    - backup: minion  # 备份原文件</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salt &apos;Minion&apos; state.apply one</div></pre></td></tr></table></figure>
+<p>下面我们来介绍使用top.sls入口文件同时对多台机器进行一个简单的配置管理。首先在states的工作目录下新建top.sls文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">SaltStack@Master: cat /src/salt/top.sls</div><div class="line"></div><div class="line">base:  #base 环境</div><div class="line">  &apos;*&apos;:  #Target( 代表所有 Traget)</div><div class="line">    - one  # 引用 one.sls 或者 one/init.sls states 文件</div><div class="line">  &apos;Minion&apos;:  #Target( 代表匹配 Minion)</div><div class="line">    - two  # 引用 two.sls 或者 tow/init.sls states 文件</div><div class="line">  &apos;Minion1&apos;:  #Target( 代表批量 Minion1)</div><div class="line">    - three  # 引用 three.sls 或者 three/init.sls states</div></pre></td></tr></table></figure></p>
+<p>最后我们就可以使用以下命令同时对Minion和Minion1两台机器进行配置管理了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">salt &apos;*&apos; state.highstate test=True  #空转，在正式应用配置前用来测试</div><div class="line">salt &apos;*&apos; state.highstate</div></pre></td></tr></table></figure></p>
+<h2 id="最佳实战"><a href="#最佳实战" class="headerlink" title="最佳实战"></a><a href="https://docs.saltstack.com/en/latest/topics/best_practices.html" target="_blank" rel="external">最佳实战</a></h2><h2 id="Salt-Stack-Formulas"><a href="#Salt-Stack-Formulas" class="headerlink" title="Salt Stack Formulas"></a><a href="https://github.com/saltstack-formulas" target="_blank" rel="external">Salt Stack Formulas</a></h2><h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzAwNzY4OTgyNA==&amp;mid=401293072&amp;idx=1&amp;sn=65dbad3a8577bd595d8af35c824194e9&amp;scene=0#wechat_redirect" target="_blank" rel="external">SaltStack第一章</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzAwNzY4OTgyNA==&amp;mid=401319484&amp;idx=1&amp;sn=d82d8e967d5f9338cfbad73e47c060cb&amp;scene=0#wechat_redirect" target="_blank" rel="external">SaltStack第二章</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzAwNzY4OTgyNA==&amp;mid=401871765&amp;idx=1&amp;sn=face6fb37b14207ecd89e159a527ae43&amp;scene=0#wechat_redirect" target="_blank" rel="external">SaltStack第三章</a></li>
+<li><a href="http://ju.outofmemory.cn/entry/99803" target="_blank" rel="external">salt-ssh实现原理</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://qi-zhou.github.io/2016/10/15/30分学会SaltStack/" data-id="ciwu8yjn80001r8juitheaux1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DevOps/">DevOps</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/10/17/《白帽子讲web安全》读书笔记/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          《白帽子讲web安全》读书笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/12/postgresql集群部署/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">postgresql集群部署</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DevOps/">DevOps</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ELK/">ELK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web安全/">web安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安全/">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息队列/">消息队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集群/">集群</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DevOps/" style="font-size: 20px;">DevOps</a> <a href="/tags/Docker/" style="font-size: 20px;">Docker</a> <a href="/tags/ELK/" style="font-size: 10px;">ELK</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/git/" style="font-size: 20px;">git</a> <a href="/tags/web安全/" style="font-size: 20px;">web安全</a> <a href="/tags/安全/" style="font-size: 20px;">安全</a> <a href="/tags/容器/" style="font-size: 10px;">容器</a> <a href="/tags/消息队列/" style="font-size: 10px;">消息队列</a> <a href="/tags/软件/" style="font-size: 10px;">软件</a> <a href="/tags/集群/" style="font-size: 10px;">集群</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/09/18/实用在线工具/">实用在线工具</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Swarm/">Docker学习总结之Docker Swarm</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Compose/">Docker学习总结之Docker Compose</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/iptables服务器实战应用/">iptables服务器实战应用</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Ansible学习总结/">Ansible学习总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 周琪(qi.zhou@shifudao.com)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

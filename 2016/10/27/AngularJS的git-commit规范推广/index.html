@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>AngularJS的git commit规范推广 | 小周私记</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="AngularJS的commit规范在社区中享有威望，用于解决快速生成release notes的问题，而且对于统一规范化有促进.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AngularJS的git commit规范推广">
+<meta property="og:url" content="https://qi-zhou.github.io/2016/10/27/AngularJS的git-commit规范推广/index.html">
+<meta property="og:site_name" content="小周私记">
+<meta property="og:description" content="AngularJS的commit规范在社区中享有威望，用于解决快速生成release notes的问题，而且对于统一规范化有促进.">
+<meta property="og:image" content="https://qi-zhou.github.io/git-zc-show.gif">
+<meta property="og:updated_time" content="2016-12-18T05:59:01.380Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AngularJS的git commit规范推广">
+<meta name="twitter:description" content="AngularJS的commit规范在社区中享有威望，用于解决快速生成release notes的问题，而且对于统一规范化有促进.">
+<meta name="twitter:image" content="https://qi-zhou.github.io/git-zc-show.gif">
+  
+    <link rel="alternate" href="/atom.xml" title="小周私记" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?edfbc429dfd69afa3c409df70d65980f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小周私记</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Stay hungry，Stay foolish.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://qi-zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-AngularJS的git-commit规范推广" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/27/AngularJS的git-commit规范推广/" class="article-date">
+  <time datetime="2016-10-27T03:00:35.000Z" itemprop="datePublished">2016-10-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      AngularJS的git commit规范推广
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>AngularJS的commit规范在社区中享有威望，用于解决快速生成<code>release notes</code>的问题，而且对于统一规范化有促进.<br><a id="more"></a><br>在日常中我们用git来管理代码和进行多人协作开发，为了我们的项目更加完善没有一定规范是不行的，代码要有代码的规范，协作要有协作的规范。今天就来说说Git中<code>Commit Message</code>的参考规范。</p>
+<p>先来看看<a href="https://github.com/angular/angular.js/commits/master" target="_blank" rel="external">AngularJS项目的Commit message</a>,再回去看看自己的。</p>
+<p>规范的好处:</p>
+<ul>
+<li>容易生成<code>CHANGELOG.md</code></li>
+<li>方便识别不重要的提交</li>
+<li>在浏览 Git 历史时提供更多信息</li>
+</ul>
+<p>目前，社区有多种<code>Commit message</code>的写法规范。本文介绍<a href="https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.uyo6cb12dt6w" target="_blank" rel="external">Angular 规范</a>，这是目前使用最广的写法，比较合理和系统化，并且有配套的工具,下面是Commitiz工具的使用演示:</p>
+<h2 id="使用演示"><a href="#使用演示" class="headerlink" title="使用演示"></a>使用演示</h2><p><img src="git-zc-show.gif" alt=""></p>
+<h2 id="commit规范"><a href="#commit规范" class="headerlink" title="commit规范"></a>commit规范</h2><p>Commit Message 格式:每次提交，Commit message 都包括三个部分：Header，Body 和 Footer。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">&lt;空行&gt;</div><div class="line">&lt;body&gt;</div><div class="line">&lt;空行&gt;</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure></p>
+<h2 id="Header即首行，是可以直接在页面中预览的部分，一共有三个部分-lt-type-gt-，-lt-scope-gt-，-lt-subject-gt-，含义分别如下"><a href="#Header即首行，是可以直接在页面中预览的部分，一共有三个部分-lt-type-gt-，-lt-scope-gt-，-lt-subject-gt-，含义分别如下" class="headerlink" title="Header即首行，是可以直接在页面中预览的部分，一共有三个部分&lt;type&gt;，&lt;scope&gt;，&lt;subject&gt;，含义分别如下:"></a>Header即首行，是可以直接在页面中预览的部分，一共有三个部分<code>&lt;type&gt;，&lt;scope&gt;，&lt;subject&gt;</code>，含义分别如下:</h2><h4 id="1-Type"><a href="#1-Type" class="headerlink" title="1. Type"></a>1. Type</h4><ul>
+<li>feat：新功能（feature）</li>
+<li>fix：修补bug</li>
+<li>docs：文档（documentation）</li>
+<li>style： 格式（不影响代码运行的变动）</li>
+<li>refactor：重构（即不是新增功能，也不是修改bug的代码变动）</li>
+<li>test：增加测试</li>
+<li>chore：构建过程或辅助工具的变动</li>
+</ul>
+<h4 id="2-Scope-用来说明本次Commit影响的范围，即简要说明修改会涉及的部分。这个本来是选填项，但从AngularJS实际项目中可以看出基本上也成了必填项了。"><a href="#2-Scope-用来说明本次Commit影响的范围，即简要说明修改会涉及的部分。这个本来是选填项，但从AngularJS实际项目中可以看出基本上也成了必填项了。" class="headerlink" title="2. Scope:用来说明本次Commit影响的范围，即简要说明修改会涉及的部分。这个本来是选填项，但从AngularJS实际项目中可以看出基本上也成了必填项了。"></a>2. Scope:用来说明本次Commit影响的范围，即简要说明修改会涉及的部分。这个本来是选填项，但从AngularJS实际项目中可以看出基本上也成了必填项了。</h4><h4 id="3-Subject"><a href="#3-Subject" class="headerlink" title="3. Subject"></a>3. Subject</h4><ul>
+<li>用来简要描述本次改动，概述就好了，因为后面还会在Body里给出具体信息。并且最好遵循下面三条:<ol>
+<li>以动词开头，使用第一人称现在时，比如change，而不是changed或changes</li>
+<li>首字母不要大写</li>
+<li>结尾不用句号(.)</li>
+</ol>
+</li>
+</ul>
+<h2 id="Body"><a href="#Body" class="headerlink" title="Body"></a>Body</h2><ul>
+<li><body>里的内容是对上面<code>subject</code>里内容的展开，在此做更加详尽的描述，内容里应该包含修改动机和修改前后的对比。</body></li>
+</ul>
+<h2 id="Footer"><a href="#Footer" class="headerlink" title="Footer"></a>Footer</h2><p>Footer 部分只用于两种情况。</p>
+<h4 id="1-不兼容变动"><a href="#1-不兼容变动" class="headerlink" title="1. 不兼容变动"></a>1. 不兼容变动</h4><p>如果当前代码与上一个版本不兼容，则 <code>Footer</code> 部分以<code>BREAKING CHANGE</code>开头，后面是对变动的描述、以及变动理由和迁移方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">BREAKING CHANGE: isolate scope bindings definition has changed.</div><div class="line"></div><div class="line">    To migrate the code follow the example below:</div><div class="line"></div><div class="line">    Before:</div><div class="line"></div><div class="line">    scope: &#123;</div><div class="line">      myAttr: &apos;attribute&apos;,</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    After:</div><div class="line"></div><div class="line">    scope: &#123;</div><div class="line">      myAttr: &apos;@&apos;,</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    The removed `inject` wasn&apos;t generaly useful for directives so there should be no code using it.</div></pre></td></tr></table></figure></p>
+<h4 id="2-关闭-Issue"><a href="#2-关闭-Issue" class="headerlink" title="2. 关闭 Issue"></a>2. 关闭 Issue</h4><p>如果当前<code>commit</code>针对某个<code>issue</code>，那么可以在<code>Footer</code>部分关闭这个<code>issue</code> 。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Closes #234</div></pre></td></tr></table></figure></p>
+<p>也可以一次关闭多个<code>issue</code>。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Closes #123, #245, #992</div></pre></td></tr></table></figure></p>
+<h2 id="Revert"><a href="#Revert" class="headerlink" title="Revert"></a>Revert</h2><p>还有一种特殊情况，如果当前<code>commit</code>用于撤销以前的 commit，则必须以<code>revert:</code>开头，后面跟着被撤销<code>Commit</code>的 <code>Header</code>。<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attr">revert:</span> feat(pencil): add <span class="string">'graphiteWidth'</span> option</div><div class="line"></div><div class="line">This reverts commit <span class="number">667</span>ecc1654a317a13331b17617d973392f415f02.</div></pre></td></tr></table></figure></p>
+<p>Body部分的格式是固定的，必须写成<code>This reverts commit &lt;SHA1&gt;</code>，其中的hash是被撤销 commit 的 SHA1 标识符。<br>如果当前<code>commit</code>与被撤销的 <code>commit</code>，在同一个发布<code>（release）</code>里面，那么它们都不会出现在<code>Change log</code>里面。如果两者在不同的发布，那么当前 <code>commit</code>，会出现在<code>Change log</code>的<code>Reverts</code>小标题下面。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>上面就是AngularJS目前的Commit规范，现在就来说说如何把规范变为可执行的具体步骤！</p>
+<p>借助神器<code>Commitiz</code>这个node工具，在提交时它会以交互式的方式用更具规范的内容引导我们一步一步实施规范。</p>
+<h2 id="安装commitizen"><a href="#安装commitizen" class="headerlink" title="安装commitizen"></a>安装commitizen</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g commitizen</div></pre></td></tr></table></figure>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>安装好之后空参执行<code>commitizen</code>会给出使用方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">root@kali-slave:~/test# commitizen</div><div class="line"></div><div class="line"></div><div class="line">    Commitizen has two command line tools:</div><div class="line"></div><div class="line">      1) commitizen -- used for installing adapters into your project</div><div class="line">      2) git-cz     -- used for making commits according to convention</div><div class="line">                       note: you can run &apos;git cz&apos; if installed with -g</div><div class="line"></div><div class="line">    Generally if you&apos;re using someone else&apos;s repo and they&apos;ve already set up an</div><div class="line">    adapter, you&apos;re going to just be running:</div><div class="line"></div><div class="line">         git-cz</div><div class="line"></div><div class="line">    However, if you create a new repo and you want to make it easier for future</div><div class="line">    contributors to follow your commit message conventions using commitizen then</div><div class="line">    you&apos;ll need to run a command like this one to add this adapter to your config:</div><div class="line"></div><div class="line">         commitizen init cz-conventional-changelog --save</div><div class="line"></div><div class="line">    You should swap out cz-conventional-changelog for the NPM package name of the</div><div class="line">    adapter you wish you install in your project&apos;s package.json.</div><div class="line"></div><div class="line">    Detailed usage:</div><div class="line"></div><div class="line">      1) commitizen &lt;sub-command&gt;</div><div class="line"></div><div class="line">         init &lt;adapter-npm-name&gt; [args]</div><div class="line"></div><div class="line">           description: Install a commitizen adapter from npm and adds it to your</div><div class="line">                        config.commitizen in your package.json file.</div><div class="line"></div><div class="line">           args:</div><div class="line">             --save         Install the adapter to package.json dependencies</div><div class="line">             --save-dev     Install the adapter to devDependencies</div><div class="line">             --save-exact   Install an exact version instead of a range</div><div class="line">             --force        Force install the adapter, even if a previous one exists.</div><div class="line"></div><div class="line">      2) git-cz &lt;any regular git commit arguments&gt;</div><div class="line"></div><div class="line">          description: Runs the commitizen prompter, asking you questions so that you</div><div class="line">                       follow the commit conventions of the repository of the current</div><div class="line">                       directory.</div><div class="line"></div><div class="line">                       note: git-cz may even be run as &apos;git cz&apos; if installed with -g.</div></pre></td></tr></table></figure></p>
+<p>上一步我们在全局范围内安装了commitizen，之后我们就可以在Git仓库中配置我们的Commit规范了。打开项目执行如下命令:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">commitizen init cz-conventional-changelog --save --save-exact</div></pre></td></tr></table></figure></p>
+<p>上面的<code>cz-conventional-changelog</code>就是AngularJS的规范。此命令帮你完成了下载<code>cz-conventional-changelog</code>规范，配置<code>package.json</code>(添加依赖和配置应用规范)，想看具体改动打开package.json即可。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>至此就算完整的安装完了，之后在需要<code>git commit</code>的地方更换成<code>git cz</code>指令即可呼出Commit的交互界面，提醒你上面规范的各处该怎么填，实在不明在自己建一个项目练习几次就好了。</p>
+<h2 id="生成-Change-log"><a href="#生成-Change-log" class="headerlink" title="生成 Change log"></a>生成 Change log</h2><p>如果你的所有<code>Commit</code>都符合 Angular 格式，那么发布新版本时，<code>Change log</code>就可以用脚本自动生成。<br>生成的文档包括以下三个部分。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">New features</div><div class="line">Bug fixes</div><div class="line">Breaking changes.</div></pre></td></tr></table></figure></p>
+<p>每个部分都会罗列相关的 commit ，并且有指向这些 commit 的链接。当然，生成的文档允许手动修改，所以发布前，你还可以添加其他内容。<a href="https://github.com/ajoslin/conventional-changelog" target="_blank" rel="external">conventional-changelog</a> 就是生成 Change log 的工具，运行下面的命令即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">npm install -g conventional-changelog</div><div class="line">cd my-project</div><div class="line">conventional-changelog -p angular -i CHANGELOG.md -w</div></pre></td></tr></table></figure></p>
+<p>上面命令不会覆盖以前的 <code>Change log</code>，只会在<code>CHANGELOG.md</code>的头部加上自从上次发布以来的变动。<br>如果你想生成所有发布的 <code>Change log</code>，要改为运行下面的命令。<br>hangelog -p angular -i CHANGELOG.md -w -r 0<br>为了方便使用，可以将其写入package.json的scripts字段。<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"scripts"</span>: &#123;</div><div class="line">    <span class="attr">"changelog"</span>: <span class="string">"conventional-changelog -p angular -i CHANGELOG.md -w -r 0"</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>以后，直接运行下面的命令即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">zhouqi@zhouqi ~/code/nagios_plugins $ npm run changelog</div><div class="line"></div><div class="line">&gt; nagios_plugins@2.0.0 changelog /home/zhouqi/code/nagios_plugins</div><div class="line">&gt; conventional-changelog -p angular -i CHANGELOG.md -w -r 0</div><div class="line"></div><div class="line">&lt;a name=&quot;2.0.0&quot;&gt;&lt;/a&gt;</div><div class="line"># 2.0.0 (2016-11-02)</div><div class="line"></div><div class="line"></div><div class="line">### Features</div><div class="line"></div><div class="line">* **fix:** 修复了邮件内容不完整的问题 ([c273e73](http://127.0.0.1:8000/zhouqi/nagios_plugins/commits/c273e73))</div><div class="line">* **function:** 实现了对ES的数据聚合报警 ([abab2b9](http://127.0.0.1:8000/zhouqi/nagios_plugins/commits/abab2b9))</div></pre></td></tr></table></figure></p>
+<h2 id="另一种有助于实施规范的方式"><a href="#另一种有助于实施规范的方式" class="headerlink" title="另一种有助于实施规范的方式"></a>另一种有助于实施规范的方式</h2><p>编辑文件<code>.gitmessage.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">zhouqi@zhouqi ~/code/rtds_gate_test $ cat .gitmessage.txt </div><div class="line"></div><div class="line">#commit message格式</div><div class="line">#</div><div class="line">#&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">#&lt;BLANK LINE&gt;</div><div class="line">#&lt;body&gt;</div><div class="line">#&lt;BLANK LINE&gt;</div><div class="line">#&lt;footer&gt;</div><div class="line">#------------------------------------------</div><div class="line">#可选的类型</div><div class="line">#</div><div class="line">#Must be one of the following:</div><div class="line">#</div><div class="line">#* feat: A new feature</div><div class="line">#* fix: A bug fix</div><div class="line">#* docs: Documentation only changes</div><div class="line">#* style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)</div><div class="line">#* refactor: A code change that neither fixes a bug nor adds a feature</div><div class="line">#* perf: A code change that improves performance</div><div class="line">#* test: Adding missing tests</div><div class="line">#* chore: Changes to the build process or auxiliary tools and libraries such as documentation generation</div></pre></td></tr></table></figure></p>
+<p>配置git<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git config  --globle commit.template .gitmessage.txt</div></pre></td></tr></table></figure></p>
+<p>使用的话直接运行<code>git commit -a</code>会提供你格式模板</p>
+<h2 id="另一个方便生成changelog的工具，文档地址"><a href="#另一个方便生成changelog的工具，文档地址" class="headerlink" title="另一个方便生成changelog的工具，文档地址"></a>另一个方便生成<code>changelog</code>的工具，<a href="https://www.npmjs.com/package/git-changelog" target="_blank" rel="external">文档地址</a></h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://qi-zhou.github.io/2016/10/27/AngularJS的git-commit规范推广/" data-id="ciwu8yjmw0000r8ju9fbiirhy" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/10/28/如何从git中永久删除一个文件/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          如何从git中永久删除一个文件
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/26/用ossec做入侵检测的一个完整示例/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">用ossec做入侵检测的一个完整示例</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DevOps/">DevOps</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ELK/">ELK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web安全/">web安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安全/">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息队列/">消息队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集群/">集群</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DevOps/" style="font-size: 20px;">DevOps</a> <a href="/tags/Docker/" style="font-size: 20px;">Docker</a> <a href="/tags/ELK/" style="font-size: 10px;">ELK</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/git/" style="font-size: 20px;">git</a> <a href="/tags/web安全/" style="font-size: 20px;">web安全</a> <a href="/tags/安全/" style="font-size: 20px;">安全</a> <a href="/tags/容器/" style="font-size: 10px;">容器</a> <a href="/tags/消息队列/" style="font-size: 10px;">消息队列</a> <a href="/tags/软件/" style="font-size: 10px;">软件</a> <a href="/tags/集群/" style="font-size: 10px;">集群</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/09/18/实用在线工具/">实用在线工具</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Swarm/">Docker学习总结之Docker Swarm</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Compose/">Docker学习总结之Docker Compose</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/iptables服务器实战应用/">iptables服务器实战应用</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Ansible学习总结/">Ansible学习总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 周琪(qi.zhou@shifudao.com)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

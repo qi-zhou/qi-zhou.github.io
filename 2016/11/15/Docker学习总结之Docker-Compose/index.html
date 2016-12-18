@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Docker学习总结之Docker Compose | 小周私记</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Docker Compose 是 Docker 官方编排（Orchestration）项目之一，负责快速在集群中部署分布式应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker学习总结之Docker Compose">
+<meta property="og:url" content="https://qi-zhou.github.io/2016/11/15/Docker学习总结之Docker-Compose/index.html">
+<meta property="og:site_name" content="小周私记">
+<meta property="og:description" content="Docker Compose 是 Docker 官方编排（Orchestration）项目之一，负责快速在集群中部署分布式应用。">
+<meta property="og:updated_time" content="2016-12-18T05:59:01.384Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker学习总结之Docker Compose">
+<meta name="twitter:description" content="Docker Compose 是 Docker 官方编排（Orchestration）项目之一，负责快速在集群中部署分布式应用。">
+  
+    <link rel="alternate" href="/atom.xml" title="小周私记" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?edfbc429dfd69afa3c409df70d65980f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小周私记</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Stay hungry，Stay foolish.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://qi-zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Docker学习总结之Docker-Compose" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/11/15/Docker学习总结之Docker-Compose/" class="article-date">
+  <time datetime="2016-11-15T10:22:18.000Z" itemprop="datePublished">2016-11-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Docker学习总结之Docker Compose
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Docker Compose 是 Docker 官方编排（Orchestration）项目之一，负责快速在集群中部署分布式应用。<br><a id="more"></a></p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Compose 项目目前在 Github 上进行维护，目前最新版本是 1.2.0。</p>
+<p>Compose 定位是“defining and running complex applications with Docker”，前身是 Fig，兼容 Fig 的模板文件。</p>
+<p>Dockerfile 可以让用户管理一个单独的应用容器；而 Compose 则允许用户在一个模板（YAML 格式）中定义一组相关联的应用容器（被称为一个 project，即项目），例如一个 Web 服务容器再加上后端的数据库服务容器等。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>安装 Compose 之前，要先安装 Docker，在此不再赘述。</p>
+<h4 id="PIP-安装"><a href="#PIP-安装" class="headerlink" title="PIP 安装"></a>PIP 安装</h4><p>这种方式最为推荐。</p>
+<p>执行命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo pip install -U docker-compose</div></pre></td></tr></table></figure></p>
+<p>安装成功后，可以查看 docker-compose 命令的用法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">$ docker-compose -h</div><div class="line">Fast, isolated development environments using Docker.</div><div class="line"></div><div class="line">Usage:</div><div class="line">  docker-compose [options] [COMMAND] [ARGS...]</div><div class="line">  docker-compose -h|--help</div><div class="line"></div><div class="line">Options:</div><div class="line">  --verbose                 Show more output</div><div class="line">  --version                 Print version and exit</div><div class="line">  -f, --file FILE           Specify an alternate compose file (default: docker-compose.yml)</div><div class="line">  -p, --project-name NAME   Specify an alternate project name (default: directory name)</div><div class="line"></div><div class="line">Commands:</div><div class="line">  build     Build or rebuild services</div><div class="line">  help      Get help on a command</div><div class="line">  kill      Kill containers</div><div class="line">  logs      View output from containers</div><div class="line">  port      Print the public port for a port binding</div><div class="line">  ps        List containers</div><div class="line">  pull      Pulls service images</div><div class="line">  rm        Remove stopped containers</div><div class="line">  run       Run a one-off command</div><div class="line">  scale     Set number of containers for a service</div><div class="line">  start     Start services</div><div class="line">  stop      Stop services</div><div class="line">  restart   Restart services</div><div class="line">  up        Create and start containers</div></pre></td></tr></table></figure></p>
+<p>之后，可以添加 bash 补全命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ curl -L https://raw.githubusercontent.com/docker/compose/1.2.0/contrib/completion/bash/docker-compose &gt; /etc/bash_completion.d/docker-compose</div></pre></td></tr></table></figure></p>
+<h4 id="二进制包"><a href="#二进制包" class="headerlink" title="二进制包"></a>二进制包</h4><p>发布的二进制包可以在 <a href="https://github.com/docker/compose/releases" target="_blank" rel="external">https://github.com/docker/compose/releases</a> 找到。</p>
+<p>下载后直接放到执行路径即可。</p>
+<p>例如，在常见的 Linux 平台上。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo curl -L https://github.com/docker/compose/releases/download/1.2.0/docker-compose-`uname -s`-`uname -m` &gt; /usr/local/bin/docker-compose</div><div class="line">$ sudo chmod a+x /usr/local/bin/docker-compose</div></pre></td></tr></table></figure></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h4 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h4><p>首先介绍几个术语。</p>
+<ul>
+<li>服务（service）：一个应用容器，实际上可以运行多个相同镜像的实例。</li>
+<li>项目(project)：由一组关联的应用容器组成的一个完整业务单元。</li>
+</ul>
+<p>可见，一个项目可以由多个服务（容器）关联而成，Compose 面向项目进行管理。</p>
+<h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>下面，我们创建一个经典的 Web 项目：一个 Haproxy，挂载三个 Web 容器。</p>
+<p>创建一个 compose-haproxy-web 目录，作为项目工作目录，并在其中分别创建两个子目录：haproxy 和 web。</p>
+<h4 id="Web-子目录"><a href="#Web-子目录" class="headerlink" title="Web 子目录"></a>Web 子目录</h4><p>这里用 Python 程序来提供一个简单的 HTTP 服务，打印出访问者的 IP 和 实际的本地 IP。</p>
+<h5 id="index-py"><a href="#index-py" class="headerlink" title="index.py"></a><em>index.py</em></h5><p>编写一个 index.py 作为服务器文件，代码为<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"><span class="comment">#authors: yeasy.github.com</span></div><div class="line"><span class="comment">#date: 2013-07-05</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> BaseHTTPServer</div><div class="line"><span class="keyword">from</span> SimpleHTTPServer <span class="keyword">import</span> SimpleHTTPRequestHandler</div><div class="line"><span class="keyword">import</span> socket</div><div class="line"><span class="keyword">import</span> fcntl</div><div class="line"><span class="keyword">import</span> struct</div><div class="line"><span class="keyword">import</span> pickle</div><div class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</div><div class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> OrderedDict</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">HandlerClass</span><span class="params">(SimpleHTTPRequestHandler)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_ip_address</span><span class="params">(self,ifname)</span>:</span></div><div class="line">        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</div><div class="line">        <span class="keyword">return</span> socket.inet_ntoa(fcntl.ioctl(</div><div class="line">            s.fileno(),</div><div class="line">            <span class="number">0x8915</span>,  <span class="comment"># SIOCGIFADDR</span></div><div class="line">            struct.pack(<span class="string">'256s'</span>, ifname[:<span class="number">15</span>])</div><div class="line">        )[<span class="number">20</span>:<span class="number">24</span>])</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">log_message</span><span class="params">(self, format, *args)</span>:</span></div><div class="line">        <span class="keyword">if</span> len(args) &lt; <span class="number">3</span> <span class="keyword">or</span> <span class="string">"200"</span> <span class="keyword">not</span> <span class="keyword">in</span> args[<span class="number">1</span>]:</div><div class="line">            <span class="keyword">return</span></div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            request = pickle.load(open(<span class="string">"pickle_data.txt"</span>,<span class="string">"r"</span>))</div><div class="line">        <span class="keyword">except</span>:</div><div class="line">            request=OrderedDict()</div><div class="line">        time_now = datetime.now()</div><div class="line">        ts = time_now.strftime(<span class="string">'%Y-%m-%d %H:%M:%S'</span>)</div><div class="line">        server = self.get_ip_address(<span class="string">'eth0'</span>)</div><div class="line">        host=self.address_string()</div><div class="line">        addr_pair = (host,server)</div><div class="line">        <span class="keyword">if</span> addr_pair <span class="keyword">not</span> <span class="keyword">in</span> request:</div><div class="line">            request[addr_pair]=[<span class="number">1</span>,ts]</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            num = request[addr_pair][<span class="number">0</span>]+<span class="number">1</span></div><div class="line">            <span class="keyword">del</span> request[addr_pair]</div><div class="line">            request[addr_pair]=[num,ts]</div><div class="line">        file=open(<span class="string">"index.html"</span>, <span class="string">"w"</span>)</div><div class="line">        file.write(<span class="string">"&lt;!DOCTYPE html&gt; &lt;html&gt; &lt;body&gt;&lt;center&gt;&lt;h1&gt;&lt;font color=\"blue\" face=\"Georgia, Arial\" size=8&gt;&lt;em&gt;HA&lt;/em&gt;&lt;/font&gt; Webpage Visit Results&lt;/h1&gt;&lt;/center&gt;"</span>);</div><div class="line">        <span class="keyword">for</span> pair <span class="keyword">in</span> request:</div><div class="line">            <span class="keyword">if</span> pair[<span class="number">0</span>] == host:</div><div class="line">                guest = <span class="string">"LOCAL: "</span>+pair[<span class="number">0</span>]</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                guest = pair[<span class="number">0</span>]</div><div class="line">            <span class="keyword">if</span> (time_now-datetime.strptime(request[pair][<span class="number">1</span>],<span class="string">'%Y-%m-%d %H:%M:%S'</span>)).seconds &lt; <span class="number">3</span>:</div><div class="line">                file.write(<span class="string">"&lt;p style=\"font-size:150%\" &gt;#"</span>+ str(request[pair][<span class="number">1</span>]) +<span class="string">": &lt;font color=\"red\"&gt;"</span>+str(request[pair][<span class="number">0</span>])+ <span class="string">"&lt;/font&gt; requests "</span> + <span class="string">"from &amp;lt&lt;font color=\"blue\"&gt;"</span>+guest+<span class="string">"&lt;/font&gt;&amp;gt to WebServer &amp;lt&lt;font color=\"blue\"&gt;"</span>+pair[<span class="number">1</span>]+<span class="string">"&lt;/font&gt;&amp;gt&lt;/p&gt;"</span>)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                file.write(<span class="string">"&lt;p style=\"font-size:150%\" &gt;#"</span>+ str(request[pair][<span class="number">1</span>]) +<span class="string">": &lt;font color=\"maroon\"&gt;"</span>+str(request[pair][<span class="number">0</span>])+ <span class="string">"&lt;/font&gt; requests "</span> + <span class="string">"from &amp;lt&lt;font color=\"navy\"&gt;"</span>+guest+<span class="string">"&lt;/font&gt;&amp;gt to WebServer &amp;lt&lt;font color=\"navy\"&gt;"</span>+pair[<span class="number">1</span>]+<span class="string">"&lt;/font&gt;&amp;gt&lt;/p&gt;"</span>)</div><div class="line">        file.write(<span class="string">"&lt;/body&gt; &lt;/html&gt;"</span>);</div><div class="line">        file.close()</div><div class="line">        pickle.dump(request,open(<span class="string">"pickle_data.txt"</span>,<span class="string">"w"</span>))</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        ServerClass  = BaseHTTPServer.HTTPServer</div><div class="line">        Protocol     = <span class="string">"HTTP/1.0"</span></div><div class="line">        addr = len(sys.argv) &lt; <span class="number">2</span> <span class="keyword">and</span> <span class="string">"0.0.0.0"</span> <span class="keyword">or</span> sys.argv[<span class="number">1</span>]</div><div class="line">        port = len(sys.argv) &lt; <span class="number">3</span> <span class="keyword">and</span> <span class="number">80</span> <span class="keyword">or</span> int(sys.argv[<span class="number">2</span>])</div><div class="line">        HandlerClass.protocol_version = Protocol</div><div class="line">        httpd = ServerClass((addr, port), HandlerClass)</div><div class="line">        sa = httpd.socket.getsockname()</div><div class="line">        <span class="keyword">print</span> <span class="string">"Serving HTTP on"</span>, sa[<span class="number">0</span>], <span class="string">"port"</span>, sa[<span class="number">1</span>], <span class="string">"..."</span></div><div class="line">        httpd.serve_forever()</div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        exit()</div></pre></td></tr></table></figure></p>
+<h5 id="index-html"><a href="#index-html" class="headerlink" title="index.html"></a><em>index.html</em></h5><p>生成一个临时的 index.html 文件，其内容会被 index.py 更新。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ touch index.html</div></pre></td></tr></table></figure></p>
+<h4 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h4><p>生成一个 Dockerfile，内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">FROM python:2.7</div><div class="line">WORKDIR /code</div><div class="line">ADD . /code</div><div class="line">EXPOSE 80</div><div class="line">CMD python index.py</div></pre></td></tr></table></figure></p>
+<h5 id="haproxy-目录"><a href="#haproxy-目录" class="headerlink" title="haproxy 目录"></a>haproxy 目录</h5><p>在其中生成一个 haproxy.cfg 文件，内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">global</div><div class="line">  log 127.0.0.1 local0</div><div class="line">  log 127.0.0.1 local1 notice</div><div class="line"></div><div class="line">defaults</div><div class="line">  log global</div><div class="line">  mode http</div><div class="line">  option httplog</div><div class="line">  option dontlognull</div><div class="line">  timeout connect 5000ms</div><div class="line">  timeout client 50000ms</div><div class="line">  timeout server 50000ms</div><div class="line"></div><div class="line">listen stats</div><div class="line">    bind 0.0.0.0:70</div><div class="line">    stats enable</div><div class="line">    stats uri /</div><div class="line"></div><div class="line">frontend balancer</div><div class="line">    bind 0.0.0.0:80</div><div class="line">    mode http</div><div class="line">    default_backend web_backends</div><div class="line"></div><div class="line">backend web_backends</div><div class="line">    mode http</div><div class="line">    option forwardfor</div><div class="line">    balance roundrobin</div><div class="line">    server weba weba:80 check</div><div class="line">    server webb webb:80 check</div><div class="line">    server webc webc:80 check</div><div class="line">    option httpchk GET /</div><div class="line">    http-check expect status 200</div></pre></td></tr></table></figure></p>
+<h5 id="docker-compose-yml"><a href="#docker-compose-yml" class="headerlink" title="docker-compose.yml"></a>docker-compose.yml</h5><p>编写 docker-compose.yml 文件，这个是 Compose 使用的主模板文件。内容十分简单，指定 3 个 web 容器，以及 1 个 haproxy 容器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">weba:</div><div class="line">    build: ./web</div><div class="line">    expose:</div><div class="line">        - 80</div><div class="line"></div><div class="line">webb:</div><div class="line">    build: ./web</div><div class="line">    expose:</div><div class="line">        - 80</div><div class="line"></div><div class="line">webc:</div><div class="line">    build: ./web</div><div class="line">    expose:</div><div class="line">        - 80</div><div class="line"></div><div class="line">haproxy:</div><div class="line">    image: haproxy:latest</div><div class="line">    volumes:</div><div class="line">        - ./haproxy:/haproxy-override</div><div class="line">        - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro</div><div class="line">    links:</div><div class="line">        - weba</div><div class="line">        - webb</div><div class="line">        - webc</div><div class="line">    ports:</div><div class="line">        - &quot;80:80&quot;</div><div class="line">        - &quot;70:70&quot;</div><div class="line">    expose:</div><div class="line">        - &quot;80&quot;</div><div class="line">        - &quot;70&quot;</div></pre></td></tr></table></figure></p>
+<p>运行 compose 项目</p>
+<p>现在 compose-haproxy-web 目录长成下面的样子。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">compose-haproxy-web</div><div class="line">├── docker-compose.yml</div><div class="line">├── haproxy</div><div class="line">│   └── haproxy.cfg</div><div class="line">└── web</div><div class="line">    ├── Dockerfile</div><div class="line">    ├── index.html</div><div class="line">    └── index.py</div></pre></td></tr></table></figure></p>
+<p>在该目录下执行 docker-compose up 命令，会整合输出所有容器的输出。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$sudo docker-compose up</div><div class="line">Recreating composehaproxyweb_webb_1...</div><div class="line">Recreating composehaproxyweb_webc_1...</div><div class="line">Recreating composehaproxyweb_weba_1...</div><div class="line">Recreating composehaproxyweb_haproxy_1...</div><div class="line">Attaching to composehaproxyweb_webb_1, composehaproxyweb_webc_1, composehaproxyweb_weba_1, composehaproxyweb_haproxy_1</div></pre></td></tr></table></figure></p>
+<p>此时访问本地的 80 端口，会经过 haproxy 自动转发到后端的某个 web 容器上，刷新页面，可以观察到访问的容器地址的变化。</p>
+<p>访问本地 70 端口，可以查看到 haproxy 的统计信息。</p>
+<p>当然，还可以使用 consul、etcd 等实现服务发现，这样就可以避免手动指定后端的 web 容器了，更为灵活。</p>
+<h2 id="Compose-命令说明"><a href="#Compose-命令说明" class="headerlink" title="Compose 命令说明"></a>Compose 命令说明</h2><p>大部分命令都可以运行在一个或多个服务上。如果没有特别的说明，命令则应用在项目所有的服务上。</p>
+<p>执行 docker-compose [COMMAND] –help 查看具体某个命令的使用说明。</p>
+<p>基本的使用格式是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker-compose [options] [COMMAND] [ARGS...]</div></pre></td></tr></table></figure></p>
+<h4 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h4><ul>
+<li>–verbose 输出更多调试信息。</li>
+<li>–version 打印版本并退出。</li>
+<li>-f, –file FILE 使用特定的 compose 模板文件，默认为 docker-compose.yml。</li>
+<li>-p, –project-name NAME 指定项目名称，默认使用目录名称。</li>
+</ul>
+<h4 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h4><h5 id="build"><a href="#build" class="headerlink" title="build"></a><em>build</em></h5><p>构建或重新构建服务。</p>
+<p>服务一旦构建后，将会带上一个标记名，例如 web_db。</p>
+<p>可以随时在项目目录下运行 docker-compose build 来重新构建服务。</p>
+<h5 id="help"><a href="#help" class="headerlink" title="help"></a><em>help</em></h5><p>获得一个命令的帮助。</p>
+<h5 id="kill"><a href="#kill" class="headerlink" title="kill"></a><em>kill</em></h5><p>通过发送 SIGKILL 信号来强制停止服务容器。支持通过参数来指定发送的信号，例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ docker-compose kill -s SIGINT</div></pre></td></tr></table></figure></p>
+<h5 id="logs"><a href="#logs" class="headerlink" title="logs"></a><em>logs</em></h5><p>查看服务的输出。</p>
+<h5 id="port"><a href="#port" class="headerlink" title="port"></a><em>port</em></h5><p>打印绑定的公共端口。</p>
+<h5 id="ps"><a href="#ps" class="headerlink" title="ps"></a><em>ps</em></h5><p>列出所有容器。</p>
+<h5 id="pull"><a href="#pull" class="headerlink" title="pull"></a><em>pull</em></h5><p>拉取服务镜像。</p>
+<h5 id="rm"><a href="#rm" class="headerlink" title="rm"></a><em>rm</em></h5><p>删除停止的服务容器。</p>
+<h5 id="run"><a href="#run" class="headerlink" title="run"></a><em>run</em></h5><p>在一个服务上执行一个命令。</p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ docker-compose run ubuntu ping docker.com</div></pre></td></tr></table></figure></p>
+<p>将会启动一个 ubuntu 服务，执行 ping docker.com 命令。</p>
+<p>默认情况下，所有关联的服务将会自动被启动，除非这些服务已经在运行中。</p>
+<p>该命令类似启动容器后运行指定的命令，相关卷、链接等等都将会按照期望创建。</p>
+<p>两个不同点：</p>
+<ul>
+<li>给定命令将会覆盖原有的自动运行命令；</li>
+<li>不会自动创建端口，以避免冲突。<br>如果不希望自动启动关联的容器，可以使用 –no-deps 选项，例如<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ docker-compose run --no-deps web python manage.py shell</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>将不会启动 web 容器所关联的其它容器。</p>
+<h5 id="scale"><a href="#scale" class="headerlink" title="scale"></a><em>scale</em></h5><p>设置同一个服务运行的容器个数。</p>
+<p>通过 service=num 的参数来设置数量。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ docker-compose scale web=2 worker=3</div></pre></td></tr></table></figure></p>
+<h5 id="start"><a href="#start" class="headerlink" title="start"></a><em>start</em></h5><p>启动一个已经存在的服务容器。</p>
+<h5 id="stop"><a href="#stop" class="headerlink" title="stop"></a><em>stop</em></h5><p>停止一个已经运行的容器，但不删除它。通过 docker-compose start 可以再次启动这些容器。</p>
+<h5 id="up"><a href="#up" class="headerlink" title="up"></a><em>up</em></h5><p>构建，（重新）创建，启动，链接一个服务相关的容器。</p>
+<p>链接的服务都将会启动，除非他们已经运行。</p>
+<p>默认情况， docker-compose up 将会整合所有容器的输出，并且退出时，所有容器将会停止。</p>
+<p>如果使用 docker-compose up -d ，将会在后台启动并运行所有的容器。</p>
+<p>默认情况，如果该服务的容器已经存在， docker-compose up 将会停止并尝试重新创建他们（保持使用 volumes-from 挂载的卷），以保证 docker-compose.yml 的修改生效。如果你不想容器被停止并重新创建，可以使用 docker-compose up –no-recreate。如果需要的话，这样将会启动已经停止的容器。</p>
+<h4 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h4><p>环境变量可以用来配置 Compose 的行为。</p>
+<p>以DOCKER_开头的变量和用来配置 Docker 命令行客户端的使用一样。如果使用 boot2docker , $(boot2docker shellinit) 将会设置它们为正确的值。</p>
+<p><strong>COMPOSE_PROJECT_NAME</strong></p>
+<p>设置通过 Compose 启动的每一个容器前添加的项目名称，默认是当前工作目录的名字。</p>
+<p><strong>COMPOSE_FILE</strong></p>
+<p>设置要使用的 docker-compose.yml 的路径。默认路径是当前工作目录。</p>
+<p><strong>DOCKER_HOST</strong></p>
+<p>设置 Docker daemon 的地址。默认使用 unix:///var/run/docker.sock，与 Docker 客户端采用的默认值一致。</p>
+<p><strong>DOCKER_TLS_VERIFY</strong></p>
+<p>如果设置不为空，则与 Docker daemon 交互通过 TLS 进行。</p>
+<p><strong>DOCKER_CERT_PATH</strong></p>
+<p>配置 TLS 通信所需要的验证（ca.pem、cert.pem 和 key.pem）文件的路径，默认是 ~/.docker 。</p>
+<h2 id="YAML-模板文件"><a href="#YAML-模板文件" class="headerlink" title="YAML 模板文件"></a>YAML 模板文件</h2><p>默认的模板文件是 docker-compose.yml，其中定义的每个服务都必须通过 image 指令指定镜像或 build 指令（需要 Dockerfile）来自动构建。</p>
+<p>其它大部分指令都跟 docker run 中的类似。</p>
+<p>如果使用 build 指令，在 Dockerfile 中设置的选项(例如：CMD, EXPOSE, VOLUME, ENV 等) 将会自动被获取，无需在 docker-compose.yml 中再次设置。</p>
+<h4 id="image"><a href="#image" class="headerlink" title="image"></a>image</h4><p>指定为镜像名称或镜像 ID。如果镜像在本地不存在，Compose 将会尝试拉去这个镜像。</p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">image: ubuntu</div><div class="line">image: orchardup/postgresql</div><div class="line">image: a4bc65fd</div></pre></td></tr></table></figure></p>
+<h4 id="build-1"><a href="#build-1" class="headerlink" title="build"></a>build</h4><p>指定 Dockerfile 所在文件夹的路径。 Compose 将会利用它自动构建这个镜像，然后使用这个镜像。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">build: /path/to/build/dir</div></pre></td></tr></table></figure></p>
+<h4 id="command"><a href="#command" class="headerlink" title="command"></a>command</h4><p>覆盖容器启动后默认执行的命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">command: bundle exec thin -p 3000</div></pre></td></tr></table></figure></p>
+<h4 id="links"><a href="#links" class="headerlink" title="links"></a>links</h4><p>链接到其它服务中的容器。使用服务名称（同时作为别名）或服务名称：服务别名 （SERVICE:ALIAS） 格式都可以。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">links:</div><div class="line"> - db</div><div class="line"> - db:database</div><div class="line"> - redis</div></pre></td></tr></table></figure></p>
+<p>使用的别名将会自动在服务容器中的 /etc/hosts 里创建。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">172.17.2.186  db</div><div class="line">172.17.2.186  database</div><div class="line">172.17.2.187  redis</div></pre></td></tr></table></figure></p>
+<p>相应的环境变量也将被创建。</p>
+<h4 id="external-links"><a href="#external-links" class="headerlink" title="external_links"></a>external_links</h4><p>链接到 docker-compose.yml 外部的容器，甚至 并非 Compose 管理的容器。参数格式跟 links 类似。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">external_links:</div><div class="line"> - redis_1</div><div class="line"> - project_db_1:mysql</div><div class="line"> - project_db_1:postgresql</div></pre></td></tr></table></figure></p>
+<h4 id="ports"><a href="#ports" class="headerlink" title="ports"></a>ports</h4><p>暴露端口信息。</p>
+<p>使用宿主：容器 （HOST:CONTAINER）格式或者仅仅指定容器的端口（宿主将会随机选择端口）都可以。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ports:</div><div class="line"> - &quot;3000&quot;</div><div class="line"> - &quot;8000:8000&quot;</div><div class="line"> - &quot;49100:22&quot;</div><div class="line"> - &quot;127.0.0.1:8001:8001&quot;</div></pre></td></tr></table></figure></p>
+<p>注：当使用 HOST:CONTAINER 格式来映射端口时，如果你使用的容器端口小于 60 你可能会得到错误得结果，因为 YAML 将会解析 xx:yy 这种数字格式为 60 进制。所以建议采用字符串格式。</p>
+<h4 id="expose"><a href="#expose" class="headerlink" title="expose"></a>expose</h4><p>暴露端口，但不映射到宿主机，只被连接的服务访问。</p>
+<p>仅可以指定内部端口为参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">expose:</div><div class="line"> - &quot;3000&quot;</div><div class="line"> - &quot;8000&quot;</div></pre></td></tr></table></figure></p>
+<h4 id="volumes"><a href="#volumes" class="headerlink" title="volumes"></a>volumes</h4><p>卷挂载路径设置。可以设置宿主机路径 （HOST:CONTAINER） 或加上访问模式 （HOST:CONTAINER:ro）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">volumes:</div><div class="line"> - /var/lib/mysql</div><div class="line"> - cache/:/tmp/cache</div><div class="line"> - ~/configs:/etc/configs/:ro</div></pre></td></tr></table></figure></p>
+<h4 id="volumes-from"><a href="#volumes-from" class="headerlink" title="volumes_from"></a>volumes_from</h4><p>从另一个服务或容器挂载它的所有卷。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">volumes_from:</div><div class="line"> - service_name</div><div class="line"> - container_name</div></pre></td></tr></table></figure></p>
+<h4 id="environment"><a href="#environment" class="headerlink" title="environment"></a>environment</h4><p>设置环境变量。你可以使用数组或字典两种格式。</p>
+<p>只给定名称的变量会自动获取它在 Compose 主机上的值，可以用来防止泄露不必要的数据。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">environment:</div><div class="line">  RACK_ENV: development</div><div class="line">  SESSION_SECRET:</div><div class="line"></div><div class="line">environment:</div><div class="line">  - RACK_ENV=development</div><div class="line">  - SESSION_SECRET</div></pre></td></tr></table></figure></p>
+<h4 id="env-file"><a href="#env-file" class="headerlink" title="env_file"></a>env_file</h4><p>从文件中获取环境变量，可以为单独的文件路径或列表。</p>
+<p>如果通过 docker-compose -f FILE 指定了模板文件，则 env_file 中路径会基于模板文件路径。</p>
+<p>如果有变量名称与 environment 指令冲突，则以后者为准。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">env_file: .env</div><div class="line"></div><div class="line">env_file:</div><div class="line">  - ./common.env</div><div class="line">  - ./apps/web.env</div><div class="line">  - /opt/secrets.env</div></pre></td></tr></table></figure></p>
+<p>环境变量文件中每一行必须符合格式，支持 # 开头的注释行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># common.env: Set Rails/Rack environment</div><div class="line">RACK_ENV=development</div></pre></td></tr></table></figure></p>
+<h4 id="extends"><a href="#extends" class="headerlink" title="extends"></a>extends</h4><p>基于已有的服务进行扩展。例如我们已经有了一个 webapp 服务，模板文件为 common.yml。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># common.yml</div><div class="line">webapp:</div><div class="line">  build: ./webapp</div><div class="line">  environment:</div><div class="line">    - DEBUG=false</div><div class="line">    - SEND_EMAILS=false</div></pre></td></tr></table></figure></p>
+<p>编写一个新的 development.yml 文件，使用 common.yml 中的 webapp 服务进行扩展。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># development.yml</div><div class="line">web:</div><div class="line">  extends:</div><div class="line">    file: common.yml</div><div class="line">    service: webapp</div><div class="line">  ports:</div><div class="line">    - &quot;8000:8000&quot;</div><div class="line">  links:</div><div class="line">    - db</div><div class="line">  environment:</div><div class="line">    - DEBUG=true</div><div class="line">db:</div><div class="line">  image: postgres</div></pre></td></tr></table></figure></p>
+<p>后者会自动继承 common.yml 中的 webapp 服务及相关环节变量。</p>
+<h4 id="net"><a href="#net" class="headerlink" title="net"></a>net</h4><p>设置网络模式。使用和 docker client 的 –net 参数一样的值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">net: &quot;bridge&quot;</div><div class="line">net: &quot;none&quot;</div><div class="line">net: &quot;container:[name or id]&quot;</div><div class="line">net: &quot;host&quot;</div><div class="line">pid</div></pre></td></tr></table></figure></p>
+<p>跟主机系统共享进程命名空间。打开该选项的容器可以相互通过进程 ID 来访问和操作。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pid: &quot;host&quot;</div></pre></td></tr></table></figure></p>
+<h4 id="dns"><a href="#dns" class="headerlink" title="dns"></a>dns</h4><p>配置 DNS 服务器。可以是一个值，也可以是一个列表。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">dns: 8.8.8.8</div><div class="line">dns:</div><div class="line">  - 8.8.8.8</div><div class="line">  - 9.9.9.9</div></pre></td></tr></table></figure></p>
+<h4 id="cap-add-cap-drop"><a href="#cap-add-cap-drop" class="headerlink" title="cap_add, cap_drop"></a>cap_add, cap_drop</h4><p>添加或放弃容器的 Linux 能力（Capabiliity）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cap_add:</div><div class="line">  - ALL</div><div class="line"></div><div class="line">cap_d   rop:</div><div class="line">  - NET_ADMIN</div><div class="line">  - SYS_ADMIN</div></pre></td></tr></table></figure></p>
+<h4 id="dns-search"><a href="#dns-search" class="headerlink" title="dns_search"></a>dns_search</h4><p>配置 DNS 搜索域。可以是一个值，也可以是一个列表。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">dns_search: example.com</div><div class="line">dns_search:</div><div class="line">  - domain1.example.com</div><div class="line">  - domain2.example.com</div></pre></td></tr></table></figure></p>
+<h4 id="working-dir-entrypoint-user-hostname-domainname-mem-limit-privileged-restart-stdin-open-tty-cpu-shares"><a href="#working-dir-entrypoint-user-hostname-domainname-mem-limit-privileged-restart-stdin-open-tty-cpu-shares" class="headerlink" title="working_dir, entrypoint, user, hostname, domainname, mem_limit, privileged, restart, stdin_open, tty, cpu_shares"></a>working_dir, entrypoint, user, hostname, domainname, mem_limit, privileged, restart, stdin_open, tty, cpu_shares</h4><p>这些都是和 docker run 支持的选项类似。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">cpu_shares: 73</div><div class="line"></div><div class="line">working_dir: /code</div><div class="line">entrypoint: /code/entrypoint.sh</div><div class="line">user: postgresql</div><div class="line"></div><div class="line">hostname: foo</div><div class="line">domainname: foo.com</div><div class="line"></div><div class="line">mem_limit: 1000000000</div><div class="line">privileged: true</div><div class="line"></div><div class="line">restart: always</div><div class="line"></div><div class="line">stdin_open: true</div><div class="line">tty: true</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://qi-zhou.github.io/2016/11/15/Docker学习总结之Docker-Compose/" data-id="ciwu8yjof0004r8ju5x8ocjis" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/11/15/Docker学习总结之Docker-Swarm/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Docker学习总结之Docker Swarm
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/15/iptables服务器实战应用/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">iptables服务器实战应用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DevOps/">DevOps</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ELK/">ELK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web安全/">web安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安全/">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息队列/">消息队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集群/">集群</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DevOps/" style="font-size: 20px;">DevOps</a> <a href="/tags/Docker/" style="font-size: 20px;">Docker</a> <a href="/tags/ELK/" style="font-size: 10px;">ELK</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/git/" style="font-size: 20px;">git</a> <a href="/tags/web安全/" style="font-size: 20px;">web安全</a> <a href="/tags/安全/" style="font-size: 20px;">安全</a> <a href="/tags/容器/" style="font-size: 10px;">容器</a> <a href="/tags/消息队列/" style="font-size: 10px;">消息队列</a> <a href="/tags/软件/" style="font-size: 10px;">软件</a> <a href="/tags/集群/" style="font-size: 10px;">集群</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/09/18/实用在线工具/">实用在线工具</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Swarm/">Docker学习总结之Docker Swarm</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Compose/">Docker学习总结之Docker Compose</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/iptables服务器实战应用/">iptables服务器实战应用</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Ansible学习总结/">Ansible学习总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 周琪(qi.zhou@shifudao.com)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

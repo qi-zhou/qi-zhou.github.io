@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>实战LXD | 小周私记</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="LXD下一代容器……">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实战LXD">
+<meta property="og:url" content="https://qi-zhou.github.io/2016/09/18/实战LXD/index.html">
+<meta property="og:site_name" content="小周私记">
+<meta property="og:description" content="LXD下一代容器……">
+<meta property="og:updated_time" content="2016-12-18T05:59:01.384Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="实战LXD">
+<meta name="twitter:description" content="LXD下一代容器……">
+  
+    <link rel="alternate" href="/atom.xml" title="小周私记" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?edfbc429dfd69afa3c409df70d65980f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小周私记</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Stay hungry，Stay foolish.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://qi-zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-实战LXD" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/18/实战LXD/" class="article-date">
+  <time datetime="2016-09-18T13:46:23.000Z" itemprop="datePublished">2016-09-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      实战LXD
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>LXD下一代容器……<br><a id="more"></a></p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><h3 id="什么是LXD？"><a href="#什么是LXD？" class="headerlink" title="什么是LXD？"></a>什么是LXD？</h3><p>LXD 相当于是一个容器的 “hypervisor” ，使你对LXC有一个新的用户体验.它由３个组件构成：</p>
+<ul>
+<li>一个系统级的守护进程(lxd)</li>
+<li>一个命令行客户端(lxc)</li>
+<li>一个openStack Nova插件(nova-compute-lxd)</li>
+</ul>
+<p>这个守护进程对外暴露了一组REST API。</p>
+<p>LXD一些大的特性：</p>
+<ul>
+<li>安全(unprivileged containers, resource restrictions and much more)</li>
+<li>可扩展 (from containers on your laptop to thousand of compute nodes)</li>
+<li>直接 (simple, clear API and crisp command line experience)</li>
+<li>基于镜像 (no more distribution templates, only good, trusted images)</li>
+<li>动态迁移</li>
+</ul>
+<h3 id="与LXC的关系"><a href="#与LXC的关系" class="headerlink" title="与LXC的关系"></a>与LXC的关系</h3><p>LXD不是LXC的重写，事实上它构建在LXC之上，提供一个新的、更好的用户体验.在LXD底层，它通过liblxc使用LXC去创建和管理容器.</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>Ubuntu 16.o4 LTS 的用户可以直接通过Ubuntu自带仓库安装:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install lxd</div></pre></td></tr></table></figure></p>
+<p>Ubuntu 14.04 LTS的用户可以通过官方 Ubuntu PPA安装:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">add-apt-repository ppa:ubuntu-lxc/lxd-stable</div><div class="line">apt-get update</div><div class="line">apt-get dist-upgrade</div><div class="line">apt-get install lxd</div></pre></td></tr></table></figure></p>
+<h3 id="存储方式"><a href="#存储方式" class="headerlink" title="存储方式"></a>存储方式</h3><p>推荐使用ZFS，因为它能支持LXD为提供最新最稳定的容器服务所需的所有功能，为每个容器提供包括：磁盘配额，即时快照/回滚，经过优化的迁移(发和收)，以及快速从镜像中创建容器。而且技术上，它比btrfs要更成熟。</p>
+<p>Ubuntu 16.04直接安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt install zfsutils-linux</div></pre></td></tr></table></figure></p>
+<p>Ubuntu 14.04可以通过zfsonlinux PPA安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt-add-repository ppa:zfs-native/stable</div><div class="line">sudo apt update</div><div class="line">sudo apt install ubuntu-zfs</div></pre></td></tr></table></figure></p>
+<h2 id="运行第一个容器"><a href="#运行第一个容器" class="headerlink" title="运行第一个容器"></a>运行第一个容器</h2><p>LXD是基于镜像的，然而默认存储里是没有镜像的,通过以下命令可以看出:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc image list</div></pre></td></tr></table></figure></p>
+<p>LXD知道３个默认的镜像服务器：</p>
+<ol>
+<li>ubuntu: (for Ubuntu stable images)</li>
+<li>ubuntu-daily: (for Ubuntu daily images)</li>
+<li>images: (for a bunch of other distributions)</li>
+</ol>
+<p>这样可以列出稳定的ubuntu镜像来：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc image list ubuntu: | less</div></pre></td></tr></table></figure></p>
+<p>下面运行第一个容器给它命名为<code>first</code>,使用的是 Ubuntu 14.04 的镜像:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc launch ubuntu:14.04 first</div></pre></td></tr></table></figure></p>
+<p>列出所有的容器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc list</div></pre></td></tr></table></figure></p>
+<p>查看运行状态的详细信息和容器的配置:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">lxc info first</div><div class="line">lxc config show first</div></pre></td></tr></table></figure></p>
+<h2 id="限制容器资源"><a href="#限制容器资源" class="headerlink" title="限制容器资源"></a>限制容器资源</h2><p>默认情况，容器是没有资源限制的,它继承自父环境,可以这样来确认:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">free -m</div><div class="line">lxc exec first -- free -m</div></pre></td></tr></table></figure></p>
+<p>下面给容器一个内存的限制:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc config set first limits.memory 64MB</div></pre></td></tr></table></figure></p>
+<p>再次刚才对容器做的限制已经生效确认:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc exec first -- free -m</div></pre></td></tr></table></figure></p>
+<h2 id="快照"><a href="#快照" class="headerlink" title="快照"></a>快照</h2><p>LXD支持快照和从快照中恢复.</p>
+<p>在打快照之前,先对容器做一些改变:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">lxc exec first -- apt-get update</div><div class="line">lxc exec first -- apt-get dist-upgrade -y</div><div class="line">lxc exec first -- apt-get autoremove --purge -y</div></pre></td></tr></table></figure></p>
+<p>现在容器是最新的，也是干净的.就对它做一个快照，命名为<code>clean</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc snapshot first clean</div></pre></td></tr></table></figure></p>
+<p>毁坏｀first｀这个容器:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc exec first -- rm -Rf /etc /usr</div></pre></td></tr></table></figure></p>
+<p>确认容器已经被毁坏:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc exec first -- bash</div></pre></td></tr></table></figure></p>
+<p>从快照中恢复容器的状态:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc restore first clean</div></pre></td></tr></table></figure></p>
+<p>确认容器已经正常:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc exec first -- bash</div></pre></td></tr></table></figure></p>
+<h2 id="创建容器镜像"><a href="#创建容器镜像" class="headerlink" title="创建容器镜像"></a>创建容器镜像</h2><p>正如上面说道的，LXD是基于镜像的，也就是说，所有的容器可以通过copy一个镜像运行的容器的方式来创建</p>
+<p>可以通过一个已存在的容器或者容器快照来创建一个新的镜像</p>
+<p>上传通过之前的<code>clean</code>快照作为一个新的镜像，并给它取个别名为<code>clean-ubuntu</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc publish first/clean --alias clean-ubuntu</div></pre></td></tr></table></figure></p>
+<p>删除<code>first</code>容器:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">lxc stop first</div><div class="line">lxc delete first</div></pre></td></tr></table></figure></p>
+<p>通过自己的镜像运行一个新容器:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc launch clean-ubuntu second</div></pre></td></tr></table></figure></p>
+<h2 id="访问容器里的文件"><a href="#访问容器里的文件" class="headerlink" title="访问容器里的文件"></a>访问容器里的文件</h2><p>从容器中拉取一个文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc file pull second/etc/hosts .</div></pre></td></tr></table></figure></p>
+<p>编辑一个文件并推到容器里:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">echo &quot;1.2.3.4 my-example&quot; &gt;&gt; hosts</div><div class="line">lxc file push hosts second/etc/hosts</div></pre></td></tr></table></figure></p>
+<p>也可以通过这种机制查看容器的日志文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc file pull second/var/log/syslog - | less</div></pre></td></tr></table></figure></p>
+<p>当一个容器不再需要时可以停止并删除它:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc delete --force second</div></pre></td></tr></table></figure></p>
+<h2 id="实用远程镜像服务器"><a href="#实用远程镜像服务器" class="headerlink" title="实用远程镜像服务器"></a>实用远程镜像服务器</h2><p>lxc 客户端工具支持多个<code>remotes</code>,那些<code>remotes</code>可以使只读的镜像服务器或只是LXD主机.</p>
+<p>LXC上游运行一个像<a href="https://images.linuxcontainers.org" target="_blank" rel="external">这样的服务</a>,它提供一系列不同linux分发版本的自动生成的镜像.      </p>
+<p>它默认添加在LXD 中，当时你不需要时可以移除或改变它.</p>
+<p>列出所有可用的镜像:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc image list images: | less</div></pre></td></tr></table></figure></p>
+<p>运行一个Centos 7容器:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc launch images:centos/7 third</div></pre></td></tr></table></figure></p>
+<p>确认它确实是Centos 7:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc exec third -- cat /etc/redhat-release</div></pre></td></tr></table></figure></p>
+<p>删除它:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc delete -f third</div></pre></td></tr></table></figure></p>
+<p>列出配置的所有的<code>remotes</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lxc remote list</div></pre></td></tr></table></figure></p>
+<h2 id="与远程LXD服务器交互"><a href="#与远程LXD服务器交互" class="headerlink" title="与远程LXD服务器交互"></a>与远程LXD服务器交互</h2><p>For this step, you’ll need a second demo session, so open a new one here</p>
+<p>Copy/paste the “lxc remote add” command from the top of the page of that new session into the shell of your old session.<br>Then confirm the server fingerprint and enter the password of the remote server.</p>
+<p>Note that it may take a few seconds for the new LXD daemon to listen to the network, just retry the command until it answers.</p>
+<p>At this point you can list the remote containers with:</p>
+<p>lxc list tryit:<br>And its images with:</p>
+<p>lxc image list tryit:<br>Now, let’s start a new container on the remote LXD using the local image we created earlier.</p>
+<p>lxc launch clean-ubuntu tryit:fourth<br>You now have a container called “fourth” running on the remote host “tryit”. You can spawn a shell inside it with (then exit):</p>
+<pre><code>lxc exec tryit:fourth bash
+Now let&apos;s copy that container into a new one called &quot;fifth&quot;:
+
+lxc copy tryit:fourth tryit:fifth
+And just for fun, move it back to our local lxd while renaming it to &quot;sixth&quot;:
+
+lxc move tryit:fifth sixth
+And confirm it&apos;s all still working (then exit):
+
+    lxc start sixth
+    lxc exec sixth -- bash
+    Then clean everything up:
+
+    lxc delete -f sixth
+    lxc delete -f tryit:fourth
+    lxc image delete clean-ubuntu
+</code></pre><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>We hope this gave you a good introduction to LXD, its capabilities and how easy it is to use.</p>
+<p>You’re welcome to use the demo service as long as you want to try LXD and play with the latest features.</p>
+<p>Enjoy!</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://qi-zhou.github.io/2016/09/18/实战LXD/" data-id="ciwu8yjqj000yr8juw4qmfmjd" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/容器/">容器</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/10/11/故障排除套路总结/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          故障排除套路总结
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DevOps/">DevOps</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ELK/">ELK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web安全/">web安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安全/">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息队列/">消息队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集群/">集群</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DevOps/" style="font-size: 20px;">DevOps</a> <a href="/tags/Docker/" style="font-size: 20px;">Docker</a> <a href="/tags/ELK/" style="font-size: 10px;">ELK</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/git/" style="font-size: 20px;">git</a> <a href="/tags/web安全/" style="font-size: 20px;">web安全</a> <a href="/tags/安全/" style="font-size: 20px;">安全</a> <a href="/tags/容器/" style="font-size: 10px;">容器</a> <a href="/tags/消息队列/" style="font-size: 10px;">消息队列</a> <a href="/tags/软件/" style="font-size: 10px;">软件</a> <a href="/tags/集群/" style="font-size: 10px;">集群</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/09/18/实用在线工具/">实用在线工具</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Swarm/">Docker学习总结之Docker Swarm</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Docker学习总结之Docker-Compose/">Docker学习总结之Docker Compose</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/iptables服务器实战应用/">iptables服务器实战应用</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Ansible学习总结/">Ansible学习总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 周琪(qi.zhou@shifudao.com)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

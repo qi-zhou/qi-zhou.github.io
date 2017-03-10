@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://qi-zhou.github.io/2016/11/15/Ansible学习总结/index.html">
 <meta property="og:site_name" content="小周私记">
 <meta property="og:description" content="……….">
-<meta property="og:updated_time" content="2016-12-18T05:59:01.380Z">
+<meta property="og:updated_time" content="2017-02-13T06:09:12.061Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ansible学习总结">
 <meta name="twitter:description" content="……….">
@@ -113,10 +113,10 @@ var _hmt = _hmt || [];
 </ul>
 <p>ansible由于走的是ssh,所以它有认证的过程，以及加密码的过程，这使得ansible非常慢，不适用于大规模环境（指上千台）。</p>
 <p>为什么我放弃salt呢，首先服务器不多（百台左右），其次，salt的master端与minion端TCP连接经常断开，导致有时执行命令时会漏机器，这简直让我忍无可忍。听说最新版的salt好了很多，但由于公司系统是定制的，安装软件特别麻烦（15M的系统，解决依赖就是个大问题），我还是选择了ansible。</p>
-<h2 id="ansible安装"><a href="#ansible安装" class="headerlink" title="ansible安装"></a>ansible安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">yum installparamiko PyYAML jinja2 httplib2  #ansible所需依赖包</div><div class="line">git clonehttps://github.com/ansible/ansible.git</div><div class="line">cd ansible</div><div class="line">python setup.pyinstall</div><div class="line">cp ansible/examples/ansible.cfg/etc/ansible/   #拷贝ansible默认的配置文件，也可不拷贝。</div></pre></td></tr></table></figure>
+<h2 id="ansible安装"><a href="#ansible安装" class="headerlink" title="ansible安装"></a>ansible安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">yum install paramiko PyYAML jinja2 httplib2  #ansible所需依赖包</div><div class="line">git clone https://github.com/ansible/ansible.git</div><div class="line">cd ansible</div><div class="line">python setup.py install</div><div class="line">cp ansible/examples/ansible.cfg /etc/ansible/   #拷贝ansible默认的配置文件，也可不拷贝。</div></pre></td></tr></table></figure>
 <p>安装完成</p>
 <p>在开始ansible操作受控机器前，需要配置好ssh免密码登陆</p>
-<h2 id="ansible命令参数介绍"><a href="#ansible命令参数介绍" class="headerlink" title="ansible命令参数介绍"></a>ansible命令参数介绍</h2><p>Ansible中的临时命令的执行是通过Ad-Hoc来完成，能够快速执行，而且不需要保存执行的命令，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible-i ～/hosts all -m command -a ‘who’ -u root</div></pre></td></tr></table></figure></p>
+<h2 id="ansible命令参数介绍"><a href="#ansible命令参数介绍" class="headerlink" title="ansible命令参数介绍"></a>ansible命令参数介绍</h2><p>Ansible中的临时命令的执行是通过Ad-Hoc来完成，能够快速执行，而且不需要保存执行的命令，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible -i ～/hosts all -m command -a ‘who’ -u root</div></pre></td></tr></table></figure></p>
 <p>主要参数如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-u username          #指定ssh连接的用户名，即执行后面命令的用户</div><div class="line">-i inventory_file    #指定所使用的inventory文件的位置，默认为/etc/ansible/hosts</div><div class="line">-m module            #指定使用的模块，默认为command</div><div class="line">-f 10                #指定并发数,并发量大的时候，提高该值</div><div class="line">--sudo [-k]          #当需要root权限执行的化，-k参数用来输入root密码</div></pre></td></tr></table></figure></p>
 <h2 id="ansible主机分组管理："><a href="#ansible主机分组管理：" class="headerlink" title="ansible主机分组管理："></a>ansible主机分组管理：</h2><p>配置好ssh免密码登陆后，就该把那些机器加入到hosts文件中，hosts不限路径，可用-i参数指定路径。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@yang~]# cat /etc/ansible/hosts </div><div class="line">[KD1]    #分组名</div><div class="line">1.1.1.1:62222    #此处对于端口进行指定，毕竟有些服务器ssh端口打开的不一样。</div><div class="line">1.1.1.2:62222</div><div class="line">[KD2]</div><div class="line">1.1.1.3:62222</div><div class="line">1.1.1.4:62222</div></pre></td></tr></table></figure></p>
 <p>分组执行效果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@yang~]# ansible -i /etc/ansible/hosts KD1 -m shell -a ‘uptime‘</div><div class="line">1.1.1.1| success | rc=0 &gt;&gt;</div><div class="line"> 11:56:31 up 2 days, 17:42, load average: 0.41,0.34, 0.32</div><div class="line"> </div><div class="line">1.1.1.2| success | rc=0 &gt;&gt;</div><div class="line"> 11:57:03 up 2 days, 17:44, load average: 0.34,0.28, 0.25</div></pre></td></tr></table></figure></p>
@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 <p>还可以使用脚本动态获取主机的方式：</p>
 <p>官方地址：<a href="http://docs.ansible.com/intro_dynamic_inventory.html" target="_blank" rel="external">http://docs.ansible.com/intro_dynamic_inventory.html</a></p>
 <p>网络文档：<a href="http://noops.me/?p=1446" target="_blank" rel="external">http://noops.me/?p=1446</a></p>
-<h2 id="ansible实时批量执行命令和脚本："><a href="#ansible实时批量执行命令和脚本：" class="headerlink" title="ansible实时批量执行命令和脚本："></a>ansible实时批量执行命令和脚本：</h2><p>批量执行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ansible-i /etc/ansible/hosts all -m shell -a ‘uptime‘</div><div class="line">ansible-i /etc/ansible/hosts all -m command -a ‘uptime‘</div><div class="line">#shell模块与command模块细节区别我也没分清在哪儿。</div></pre></td></tr></table></figure></p>
+<h2 id="ansible实时批量执行命令和脚本："><a href="#ansible实时批量执行命令和脚本：" class="headerlink" title="ansible实时批量执行命令和脚本："></a>ansible实时批量执行命令和脚本：</h2><p>批量执行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ansible -i /etc/ansible/hosts all -m shell -a ‘uptime‘</div><div class="line">ansible -i /etc/ansible/hosts all -m command -a ‘uptime‘</div><div class="line">#shell模块与command模块细节区别我也没分清在哪儿。</div></pre></td></tr></table></figure></p>
 <p>批量执行脚本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ansibleall -m script -a &quot;/root/123.sh&quot;  #</div><div class="line">#此命令是在远程服务器上执行本地的脚本</div></pre></td></tr></table></figure></p>
 <p>网上文档说，复杂的命令用playbook管理，我实在不认同，作为运维人员，我写一个脚本多简单，干嘛去花太多时间研究playbook的格式与用法呢？</p>
 <p>再说，ansible对于一些安装包的管理，我可以事先做好rpm包，然后使用copy模块分发过去就是，为什么去研究太多的用法？</p>
@@ -132,7 +132,7 @@ var _hmt = _hmt || [];
 <h2 id="ansible定时同步文件"><a href="#ansible定时同步文件" class="headerlink" title="ansible定时同步文件"></a>ansible定时同步文件</h2><p>既然ansible的copy模块是rsync的包装，那我定期执行copy目录的命令，就能完成文件的定时同步了。如果文件变化，就会同步过去，如果没变化，就不会拷贝。以后只要把要同步的文件放到该目录下即可。</p>
 <h2 id="ansible模块帮助"><a href="#ansible模块帮助" class="headerlink" title="ansible模块帮助"></a>ansible模块帮助</h2><p>执行命令用到的那些模块是干嘛的？使用ansible-doc查看帮助吧。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ansible-doc-l       #查看模块列表</div><div class="line">ansible-doc  copy    #查看copy模块的详细信息</div><div class="line">ansible-doc  script #查看script模块的详细信息</div></pre></td></tr></table></figure></p>
 <p>常用的模块有ping,copy,shell,command,script等。更多模块的使用请自行探索吧，我比较懒，满足我的需求后就不想动脑了。</p>
-<h2 id="ansibleplaybook的使用"><a href="#ansibleplaybook的使用" class="headerlink" title="ansibleplaybook的使用"></a>ansibleplaybook的使用</h2><p>其实playbook就是把上述在命令行的操作，以yml格式写在文件中来执行而已。复杂的playbook只是更多的命令行操作的集合。</p>
+<h2 id="ansible-playbook的使用"><a href="#ansible-playbook的使用" class="headerlink" title="ansible playbook的使用"></a>ansible playbook的使用</h2><p>其实playbook就是把上述在命令行的操作，以yml格式写在文件中来执行而已。复杂的playbook只是更多的命令行操作的集合。</p>
 <p>此例：当某个文件变化后，移走该文件。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">#cat  playbook.yml</div><div class="line">---</div><div class="line">- hosts:local  # hosts中指定</div><div class="line">  remote_user: yang  # 如果和当前用户一样，则无需指定</div><div class="line">  tasks:</div><div class="line">      - name: whoami</div><div class="line">        copy: src=~/hosts dest=~/hosts.dest  #  本地拷贝到远端</div><div class="line">        notify: # 如果copy执行完之后~/hosts.dest文件发送了变化，则执行</div><div class="line">            - clear copy  # 调用handler中的clear copy定义的动作</div><div class="line">  handlers:</div><div class="line">      - name: clear copy</div><div class="line">        shell: ‘mv ~/hosts.dest hosts.del‘  # 假装删除</div></pre></td></tr></table></figure></p>
 <p>注解：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tasks定义了playbook中要执行的任务，包括任务名name以及具体的任务内容</div><div class="line">notify：类似于Salt的require，表示当前面的任务完成后且有相应的变化时调用后面定义的handler</div><div class="line">handlers：与notify结合使用，被调用的handler的具体定义</div></pre></td></tr></table></figure></p>
 <p>playbook执行方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ansible-playbookplaybook.yml    </div><div class="line">#主机名、执行命令都已在yml中指定了。</div></pre></td></tr></table></figure></p>
@@ -147,7 +147,7 @@ var _hmt = _hmt || [];
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://qi-zhou.github.io/2016/11/15/Ansible学习总结/" data-id="ciwu8yjnm0003r8ju0cnsgtz2" class="article-share-link">Share</a>
+      <a data-url="https://qi-zhou.github.io/2016/11/15/Ansible学习总结/" data-id="cizm5rmwc0000upjurucelmxs" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DevOps/">DevOps</a></li></ul>
@@ -208,7 +208,7 @@ var _hmt = _hmt || [];
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li></ul>
     </div>
   </div>
 
@@ -225,19 +225,19 @@ var _hmt = _hmt || [];
           </li>
         
           <li>
-            <a href="/2016/11/15/Docker学习总结之Docker-Swarm/">Docker学习总结之Docker Swarm</a>
+            <a href="/2017/02/19/PBS-torque集群编译部署记录/">PBS torque集群编译部署记录</a>
           </li>
         
           <li>
-            <a href="/2016/11/15/Docker学习总结之Docker-Compose/">Docker学习总结之Docker Compose</a>
+            <a href="/2017/02/19/记一次服务器磁盘迁移过程/">记一次服务器磁盘迁移过程</a>
           </li>
         
           <li>
-            <a href="/2016/11/15/iptables服务器实战应用/">iptables服务器实战应用</a>
+            <a href="/2017/02/19/分享一个postgresql实时热备份的脚本/">分享一个postgresql实时热备份的脚本</a>
           </li>
         
           <li>
-            <a href="/2016/11/15/Ansible学习总结/">Ansible学习总结</a>
+            <a href="/2017/02/19/轻松免费翻墙上google/">轻松免费翻墙上google</a>
           </li>
         
       </ul>
@@ -252,7 +252,7 @@ var _hmt = _hmt || [];
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2016 周琪(qi.zhou@shifudao.com)<br>
+      &copy; 2017 周琪(qi.zhou@shifudao.com)<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

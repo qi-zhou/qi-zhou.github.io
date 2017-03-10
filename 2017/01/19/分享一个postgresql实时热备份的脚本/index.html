@@ -3,14 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>归档: 2020/9 | 小周私记</title>
+  <title>分享一个postgresql实时热备份的脚本 | 小周私记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="小周私记">
-<meta property="og:url" content="https://qi-zhou.github.io/archives/2020/09/index.html">
+  <meta name="description" content="123456789101112131415161718192021222324252627#!/bin/bash#脚本作用：备份本机postgres数据库#Author: Jack Zhou#Date: 2017-01-18backupDir=/mnt/psql_backup #备份目录设置pguser=postgresbackup_caps=14 #备份上限天数TODAY=`date +%F`i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分享一个postgresql实时热备份的脚本">
+<meta property="og:url" content="https://qi-zhou.github.io/2017/01/19/分享一个postgresql实时热备份的脚本/index.html">
 <meta property="og:site_name" content="小周私记">
+<meta property="og:description" content="123456789101112131415161718192021222324252627#!/bin/bash#脚本作用：备份本机postgres数据库#Author: Jack Zhou#Date: 2017-01-18backupDir=/mnt/psql_backup #备份目录设置pguser=postgresbackup_caps=14 #备份上限天数TODAY=`date +%F`i">
+<meta property="og:updated_time" content="2017-02-26T04:35:36.604Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="小周私记">
+<meta name="twitter:title" content="分享一个postgresql实时热备份的脚本">
+<meta name="twitter:description" content="123456789101112131415161718192021222324252627#!/bin/bash#脚本作用：备份本机postgres数据库#Author: Jack Zhou#Date: 2017-01-18backupDir=/mnt/psql_backup #备份目录设置pguser=postgresbackup_caps=14 #备份上限天数TODAY=`date +%F`i">
   
     <link rel="alternate" href="/atom.xml" title="小周私记" type="application/atom+xml">
   
@@ -75,39 +79,63 @@ var _hmt = _hmt || [];
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/09/18/实用在线工具/" class="archive-article-date">
-  <time datetime="2020-09-18T11:33:50.000Z" itemprop="datePublished">9月 18</time>
+        <section id="main"><article id="post-分享一个postgresql实时热备份的脚本" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/01/19/分享一个postgresql实时热备份的脚本/" class="article-date">
+  <time datetime="2017-01-19T06:43:42.000Z" itemprop="datePublished">2017-01-19</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/18/实用在线工具/">实用在线工具</a>
+    <h1 class="article-title" itemprop="name">
+      分享一个postgresql实时热备份的脚本
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line">#脚本作用：备份本机postgres数据库</div><div class="line">#Author: Jack Zhou</div><div class="line">#Date: 2017-01-18</div><div class="line"></div><div class="line">backupDir=/mnt/psql_backup #备份目录设置</div><div class="line">pguser=postgres</div><div class="line">backup_caps=14 #备份上限天数</div><div class="line">TODAY=`date +%F`</div><div class="line"></div><div class="line">if [[ `id -u` -ne 0 ]]; then</div><div class="line">echo &quot;Must run as root. So exit.&quot; &gt;&amp;2</div><div class="line">exit 1</div><div class="line">fi</div><div class="line"></div><div class="line">if [ ! -d &quot;$backupDir/$TODAY&quot; ]; then</div><div class="line">mkdir -p &quot;$backupDir/$TODAY&quot;</div><div class="line">chown -R $&#123;pguser&#125;.$&#123;pguser&#125; &quot;$backupDir/$TODAY&quot;</div><div class="line">fi</div><div class="line">exec &amp;&gt;&gt; &quot;$backupDir/backup.log&quot;</div><div class="line"></div><div class="line">echo &quot;$(date +%F/%T)开始基础备份&quot;</div><div class="line">su - -c &quot;pg_basebackup -D $&#123;backupDir&#125;/$&#123;TODAY&#125;/base-backup -Ft -z -x&quot; $pguser</div><div class="line">[[ $? = 0 ]] &amp;&amp; echo &quot;$(date +%F/%T)备份成功！&quot;</div><div class="line"></div><div class="line">echo &quot;删除以下过期的备份文件：&quot;</div><div class="line">find &quot;$backupDir&quot; -maxdepth 1 ! -path &quot;$backupDir&quot; -type d -mtime +$backup_caps -print -exec rm -fr &apos;&#123;&#125;&apos; \;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://qi-zhou.github.io/2017/01/19/分享一个postgresql实时热备份的脚本/" data-id="cj03ptt2r001df7jug0jikdqn" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shell/">shell</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/02/18/运维中获得的教训/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          运维中获得的教训
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/12/18/openvpn的安装和配置/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">openvpn的安装和配置</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         
